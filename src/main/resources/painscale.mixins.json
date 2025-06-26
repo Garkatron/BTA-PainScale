@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "deus.painscale.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "MobMonster",
+    "PlayerMixin",
+    "SpawnerMobsMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

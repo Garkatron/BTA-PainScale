@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "id": "examplemod",
+  "id": "painscale",
   "version": "${version}",
 
   "name": "Example Mod",
-  "description": "This mod aims to help new BTA modders.",
+  "description": "This mod aims to punish bta players.",
   "authors": [
-    "Turnip Labs"
+    "@Garkatron"
   ],
   "contact": {
     "homepage": "",
@@ -19,20 +19,20 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-			"turniplabs.examplemod.ExampleMod"
+			"deus.painscale.PainScaleMod"
     ],
 		"beforeGameStart": [
-			"turniplabs.examplemod.ExampleMod"
+			"deus.painscale.PainScaleMod"
 		],
 		"afterGameStart": [
-			"turniplabs.examplemod.ExampleMod"
+			"deus.painscale.PainScaleMod"
 		],
 		"recipesReady": [
-			"turniplabs.examplemod.ExampleMod"
+			"deus.painscale.PainScaleMod"
 		]
 	},
   "mixins": [
-      "examplemod.mixins.json"
+		"painscale.mixins.json"
   ],
 
   "depends": {
