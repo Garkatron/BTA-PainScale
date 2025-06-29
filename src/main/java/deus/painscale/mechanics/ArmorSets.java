@@ -74,7 +74,6 @@ public class ArmorSets {
 
 	public static List<List<IArmorItem>> getArmorSetsForLevel(int lvl) {
 		Integer key = SETS.floorKey(lvl);
-		System.out.println(SETS);
 		return key != null ? SETS.get(key) : List.of(defaultSet);
 	}
 

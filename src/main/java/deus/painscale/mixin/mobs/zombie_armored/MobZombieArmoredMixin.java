@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 
-@Mixin(value = MobZombieArmored.class)
+@Mixin(value = MobZombieArmored.class, remap = false)
 public class MobZombieArmoredMixin extends MobZombie implements IPainScaleMobZombieArmored {
 
 	@Unique
@@ -42,11 +42,6 @@ public class MobZombieArmoredMixin extends MobZombie implements IPainScaleMobZom
 		IPainScaleMobMonster z2 = (IPainScaleMobMonster) (Object) z;
 
 		List<IArmorItem> set = ArmorSets.getRandomArmorSet(z2.ps$getDfLevel());
-
-//		System.out.println("Spawn level: " + lvl + " | Selected armor set: " +
-//			set.stream()
-//				.map(a -> a == null ? "null" : a.asItem().getStatName())
-//				.toList());
 
 		for (IArmorItem armor : set) {
 			if (armor == null) continue;

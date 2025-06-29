@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-@Mixin(value = net.minecraft.core.entity.Mob.class)
+@Mixin(value = net.minecraft.core.entity.Mob.class, remap = false)
 public abstract class MobMixin {
 
 

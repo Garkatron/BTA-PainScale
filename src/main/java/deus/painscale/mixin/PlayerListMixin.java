@@ -1,6 +1,7 @@
 package deus.painscale.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
+import deus.painscale.PainScaleMod;
 import deus.painscale.api.IPainScalePlayer;
 import net.minecraft.server.entity.player.PlayerServer;
 import net.minecraft.server.net.PlayerList;
@@ -17,5 +18,14 @@ public class PlayerListMixin {
 		((IPainScalePlayer)newPlayer).ps$setRemainingPoints(((IPainScalePlayer)previousPlayer).ps$getRemainingPoints());
 		((IPainScalePlayer)newPlayer).ps$setDifficultyPoints(((IPainScalePlayer)previousPlayer).ps$getDifficultyPoints());
 		((IPainScalePlayer)newPlayer).ps$setDifficultyLevels(((IPainScalePlayer)previousPlayer).ps$getDifficultyLevel());
+
+		double multiplier = PainScaleMod.CFG.getDouble("Points.point_cost_multiplier_per_level");
+		int base = PainScaleMod.CFG.getInt("Points.lose_on_death");
+
+		int pointsToLose = (int) (base * (((IPainScalePlayer)newPlayer).ps$getDifficultyLevel() * multiplier));
+
+		((IPainScalePlayer)newPlayer).ps$subPoints(pointsToLose);
+
+		newPlayer.sendMessage("You lost " + pointsToLose + " points...");
 	}
 }
