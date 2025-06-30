@@ -11,13 +11,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 
-@Mixin(Biome.class)
+@Mixin(value = Biome.class, remap = false)
 public abstract class BiomeMixin {
 
-	@Shadow
+	@Shadow(remap = false)
 	protected List<SpawnListEntry> spawnableMonsterList;
 
-	@Inject(method = "<init>", at = @At("TAIL"))
+	@Inject(method = "<init>", at = @At("TAIL"), remap = false)
 	private void onConstructed(String key, CallbackInfo ci) {
 		this.spawnableMonsterList.add(new SpawnListEntry(MobSkeletonArmored.class, 8));
 	}

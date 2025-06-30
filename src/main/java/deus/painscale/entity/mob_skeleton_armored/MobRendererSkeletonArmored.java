@@ -4,7 +4,6 @@ import deus.painscale.api.IPainScaleMobInventory;
 import net.minecraft.client.render.entity.MobRendererBiped;
 import net.minecraft.client.render.model.ModelBiped;
 import net.minecraft.client.render.model.ModelZombie;
-import net.minecraft.core.entity.monster.MobZombieArmored;
 import net.minecraft.core.item.*;
 
 public class MobRendererSkeletonArmored extends MobRendererBiped<MobSkeletonArmored> {

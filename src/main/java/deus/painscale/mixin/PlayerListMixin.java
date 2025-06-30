@@ -18,13 +18,15 @@ public class PlayerListMixin {
 		((IPainScalePlayer)newPlayer).ps$setRemainingPoints(((IPainScalePlayer)previousPlayer).ps$getRemainingPoints());
 		((IPainScalePlayer)newPlayer).ps$setDifficultyPoints(((IPainScalePlayer)previousPlayer).ps$getDifficultyPoints());
 		((IPainScalePlayer)newPlayer).ps$setDifficultyLevels(((IPainScalePlayer)previousPlayer).ps$getDifficultyLevel());
-
+		((IPainScalePlayer)newPlayer).ps$setMaxHealth(previousPlayer.getMaxHealth());
+		
 		double multiplier = PainScaleMod.CFG.getDouble("Points.point_cost_multiplier_per_level");
 		int base = PainScaleMod.CFG.getInt("Points.lose_on_death");
 
 		int pointsToLose = (int) (base * (((IPainScalePlayer)newPlayer).ps$getDifficultyLevel() * multiplier));
 
 		((IPainScalePlayer)newPlayer).ps$subPoints(pointsToLose);
+
 
 		newPlayer.sendMessage("You lost " + pointsToLose + " points...");
 	}

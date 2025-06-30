@@ -7,8 +7,6 @@ import deus.painscale.api.IPainScaleMobMonster;
 import deus.painscale.mechanics.ArmorSets;
 import deus.painscale.mobstuff.containers.MobContainerInventory;
 import net.minecraft.core.entity.monster.MobSkeleton;
-import net.minecraft.core.entity.monster.MobZombie;
-import net.minecraft.core.entity.monster.MobZombieArmored;
 import net.minecraft.core.item.IArmorItem;
 import net.minecraft.core.item.Item;
 import net.minecraft.core.item.ItemArmor;
