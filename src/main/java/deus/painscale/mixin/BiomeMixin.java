@@ -1,5 +1,6 @@
 package deus.painscale.mixin;
 
+import deus.painscale.PainScaleMod;
 import deus.painscale.entity.mob_skeleton_armored.MobSkeletonArmored;
 import net.minecraft.core.entity.SpawnListEntry;
 import net.minecraft.core.world.biome.Biome;
@@ -19,6 +20,9 @@ public abstract class BiomeMixin {
 
 	@Inject(method = "<init>", at = @At("TAIL"), remap = false)
 	private void onConstructed(String key, CallbackInfo ci) {
-		this.spawnableMonsterList.add(new SpawnListEntry(MobSkeletonArmored.class, 8));
+		if (PainScaleMod.CFG.getBoolean("Enemies.armored_skeletons")) {
+			this.spawnableMonsterList.add(new SpawnListEntry(MobSkeletonArmored.class, 8));
+		}
+
 	}
 }

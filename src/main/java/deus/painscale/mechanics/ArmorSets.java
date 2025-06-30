@@ -13,9 +13,9 @@ public class ArmorSets {
 	public static final List<IArmorItem> defaultSet = new ArrayList<>();
 
 	public static void initialize() {
-		defaultSet.add((IArmorItem) Items.ARMOR_BOOTS_CHAINMAIL);
-		defaultSet.add((IArmorItem) Items.ARMOR_LEGGINGS_CHAINMAIL);
-		defaultSet.add((IArmorItem) Items.ARMOR_CHESTPLATE_CHAINMAIL);
+		defaultSet.add((IArmorItem) null);
+		defaultSet.add((IArmorItem) null);
+		defaultSet.add((IArmorItem) null);
 		defaultSet.add((IArmorItem) Items.ARMOR_HELMET_CHAINMAIL);
 
 		register(0, Items.ARMOR_BOOTS_LEATHER, Items.ARMOR_LEGGINGS_LEATHER);

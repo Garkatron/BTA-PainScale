@@ -26,7 +26,7 @@ public class MinecraftMixin {
 		((IPainScalePlayer)thePlayer).ps$setMaxHealth(previousPlayer.getMaxHealth());
 
 		double multiplier = PainScaleMod.CFG.getDouble("Points.point_cost_multiplier_per_level");
-		int base = PainScaleMod.CFG.getInt("Points.lose_on_death");
+		int base = PainScaleMod.CFG.getInt("Points.lose_on_death_per_level");
 
 		int pointsToLose = (int) (base * (((IPainScalePlayer)thePlayer).ps$getDifficultyLevel() * multiplier));
 

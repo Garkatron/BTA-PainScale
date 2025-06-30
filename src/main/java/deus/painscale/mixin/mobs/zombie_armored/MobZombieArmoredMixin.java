@@ -2,6 +2,7 @@ package deus.painscale.mixin.mobs.zombie_armored;
 
 import com.mojang.nbt.tags.CompoundTag;
 import com.mojang.nbt.tags.ListTag;
+import deus.painscale.PainScaleMod;
 import deus.painscale.mechanics.ArmorSets;
 import deus.painscale.api.IPainScaleMobMonster;
 import deus.painscale.api.IPainScaleMobInventory;
@@ -19,7 +20,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static deus.painscale.PainScaleMod.ARMORED_ZOMBIES_PLUS;
 
 @Mixin(value = MobZombieArmored.class, remap = false)
 public class MobZombieArmoredMixin extends MobZombie implements IPainScaleMobInventory {
@@ -39,10 +43,15 @@ public class MobZombieArmoredMixin extends MobZombie implements IPainScaleMobInv
 
 	@Inject(method = "spawnInit", at = @At("TAIL"), remap = false)
 	public void afterSpawnInit(CallbackInfo ci) {
-		IPainScaleMobInventory z = (IPainScaleMobInventory) (Object) this;
-		IPainScaleMobMonster z2 = (IPainScaleMobMonster) (Object) z;
+		IPainScaleMobMonster z2 = (IPainScaleMobMonster) (Object) this;
 
-		List<IArmorItem> set = ArmorSets.getRandomArmorSet(z2.ps$getDfLevel());
+		List<IArmorItem> set;
+		if (world!=null && world.getGameRuleValue(ARMORED_ZOMBIES_PLUS)) {
+			set = ArmorSets.getRandomArmorSet(z2.ps$getDfLevel());;
+		} else {
+			set = ArmorSets.defaultSet;
+		}
+
 
 		for (IArmorItem armor : set) {
 			if (armor == null) continue;
