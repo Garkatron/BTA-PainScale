@@ -1,5 +1,7 @@
 package deus.painscale.mobstuff.containers;
 
+import com.mojang.nbt.tags.CompoundTag;
+import com.mojang.nbt.tags.ListTag;
 import net.minecraft.core.entity.Mob;
 import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.IArmorItem;
@@ -140,4 +142,47 @@ public class MobContainerInventory implements Container {
 
 		return protectionPercentage;
 	}
-}
+
+	public ListTag writeToNBT(ListTag nbttaglist) {
+		int j;
+		CompoundTag nbttagcompound1;
+		for(j = 0; j < this.mainInventory.length; ++j) {
+			if (this.mainInventory[j] != null) {
+				nbttagcompound1 = new CompoundTag();
+				nbttagcompound1.putByte("Slot", (byte)j);
+				this.mainInventory[j].writeToNBT(nbttagcompound1);
+				nbttaglist.addTag(nbttagcompound1);
+			}
+		}
+
+		for(j = 0; j < this.armorInventory.length; ++j) {
+			if (this.armorInventory[j] != null) {
+				nbttagcompound1 = new CompoundTag();
+				nbttagcompound1.putByte("Slot", (byte)(j + 100));
+				this.armorInventory[j].writeToNBT(nbttagcompound1);
+				nbttaglist.addTag(nbttagcompound1);
+			}
+		}
+
+		return nbttaglist;
+	}
+	public void readFromNBT(ListTag nbttaglist) {
+		this.mainInventory = new ItemStack[36];
+		this.armorInventory = new ItemStack[4];
+
+		for(int i = 0; i < nbttaglist.tagCount(); ++i) {
+			CompoundTag nbttagcompound = (CompoundTag)nbttaglist.tagAt(i);
+			int j = nbttagcompound.getByte("Slot") & 255;
+			ItemStack itemstack = ItemStack.readItemStackFromNbt(nbttagcompound);
+			if (itemstack != null) {
+				if (j >= 0 && j < this.mainInventory.length) {
+					this.mainInventory[j] = itemstack;
+				}
+
+				if (j >= 100 && j < this.armorInventory.length + 100) {
+					this.armorInventory[j - 100] = itemstack;
+				}
+			}
+		}
+
+	}}

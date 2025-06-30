@@ -2,6 +2,6 @@ package deus.painscale.api;
 
 import deus.painscale.mobstuff.containers.MobContainerInventory;
 
-public interface IPainScaleMobZombieArmored {
+public interface IPainScaleMobInventory {
 	MobContainerInventory ps$getInv();
 }

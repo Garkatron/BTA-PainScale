@@ -1,13 +1,14 @@
 package deus.painscale.mixin.mobs.zombie_armored;
 
+import com.mojang.nbt.tags.CompoundTag;
+import com.mojang.nbt.tags.ListTag;
 import deus.painscale.mechanics.ArmorSets;
 import deus.painscale.api.IPainScaleMobMonster;
-import deus.painscale.api.IPainScaleMobZombieArmored;
+import deus.painscale.api.IPainScaleMobInventory;
 import deus.painscale.mobstuff.containers.MobContainerInventory;
 import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.monster.MobZombie;
 import net.minecraft.core.entity.monster.MobZombieArmored;
-import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.*;
 import net.minecraft.core.util.helper.DamageType;
 import net.minecraft.core.world.World;
@@ -21,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 
 @Mixin(value = MobZombieArmored.class, remap = false)
-public class MobZombieArmoredMixin extends MobZombie implements IPainScaleMobZombieArmored {
+public class MobZombieArmoredMixin extends MobZombie implements IPainScaleMobInventory {
 
 	@Unique
 	public MobContainerInventory inventory;
@@ -38,7 +39,7 @@ public class MobZombieArmoredMixin extends MobZombie implements IPainScaleMobZom
 
 	@Inject(method = "spawnInit", at = @At("TAIL"), remap = false)
 	public void afterSpawnInit(CallbackInfo ci) {
-		IPainScaleMobZombieArmored z = (IPainScaleMobZombieArmored) (Object) this;
+		IPainScaleMobInventory z = (IPainScaleMobInventory) (Object) this;
 		IPainScaleMobMonster z2 = (IPainScaleMobMonster) (Object) z;
 
 		List<IArmorItem> set = ArmorSets.getRandomArmorSet(z2.ps$getDfLevel());
@@ -63,14 +64,7 @@ public class MobZombieArmoredMixin extends MobZombie implements IPainScaleMobZom
 	@Overwrite(remap = false)
 	public boolean hurt(Entity attacker, int i, DamageType type) {
 		int lastHealth = this.getHealth();
-		boolean result = super.hurt(attacker, i, type);
-		if (attacker instanceof Player) {
-			if (inventory.armorInventory[0]!=null) {
-				//((Player)attacker).sendMessage("tesT: " + inventory.armorInventory[0].getItemDamageForDisplay());
-			}
-		}
-		// damageEntity(i, type);
-		return false;
+		return super.hurt(attacker, i, type);
 	}
 
 	@Override
@@ -86,6 +80,17 @@ public class MobZombieArmoredMixin extends MobZombie implements IPainScaleMobZom
 		}
 
 		super.damageEntity(newDamage, damageType);
+	}
+
+	@Inject(method = "addAdditionalSaveData", at = @At("TAIL"), remap = false)
+	public void modifiedAddAdditionalSaveData(CompoundTag tag, CallbackInfo ci) {
+		tag.put("Inventory", this.inventory.writeToNBT(new ListTag()));
+	}
+
+	@Inject(method = "readAdditionalSaveData", at = @At("TAIL"), remap = false)
+	public void modifiedReadAdditionalSaveData(CompoundTag tag, CallbackInfo ci) {
+		ListTag nbttaglist = tag.getList("Inventory");
+		this.inventory.readFromNBT(nbttaglist);
 	}
 
 

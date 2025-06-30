@@ -1,42 +1,26 @@
-package deus.painscale.mixin.mobs.zombie_armored;
+package deus.painscale.entity.mob_skeleton_armored;
 
 import deus.painscale.api.IPainScaleMobInventory;
 import net.minecraft.client.render.entity.MobRendererBiped;
-import net.minecraft.client.render.entity.MobRendererZombieArmored;
 import net.minecraft.client.render.model.ModelBiped;
 import net.minecraft.client.render.model.ModelZombie;
 import net.minecraft.core.entity.monster.MobZombieArmored;
 import net.minecraft.core.item.*;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(value = MobRendererZombieArmored.class, remap = false)
-public class MobRendererZombieArmoredMixin extends MobRendererBiped<MobZombieArmored>  {
+public class MobRendererSkeletonArmored extends MobRendererBiped<MobSkeletonArmored> {
 
-	@Final
-	@Shadow(remap = false)
-	private ModelZombie modelArmorChestplate;
+	private final ModelZombie modelArmorChestplate;
+	private final ModelZombie modelArmor;
 
-	@Final
-	@Shadow(remap = false)
-	private ModelZombie modelArmor;
-
-	public MobRendererZombieArmoredMixin(ModelBiped model, float shadowSize) {
+	public MobRendererSkeletonArmored(ModelBiped model, float shadowSize) {
 		super(model, shadowSize);
+		this.modelBipedMain = model;
+		this.modelArmorChestplate = new ModelZombie(1.0F);
+		this.modelArmor = new ModelZombie(0.5F);
 	}
 
-	@Shadow(remap = false)
-	private void hideArmorPiece(int piece) {}
-
-
-	/**
-	 * @author Garkatron
-	 * @reason Implement armors
-	 */
-	@Overwrite(remap = false)
-	public boolean prepareArmor(MobZombieArmored entity, int layer, float partialTick) {
+	@Override
+	public boolean prepareArmor(MobSkeletonArmored entity, int layer, float partialTick) {
 		ItemStack itemstack = ((IPainScaleMobInventory)entity).ps$getInv().armorItemInSlot(3 - layer);
 		if (itemstack != null) {
 			Item item = itemstack.getItem();
@@ -74,5 +58,4 @@ public class MobRendererZombieArmoredMixin extends MobRendererBiped<MobZombieArm
 
 		return false;
 	}
-
 }
