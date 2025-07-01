@@ -1,37 +1,31 @@
-# Example Mod
+# Pain Scale
+## Key Features
 
-Template for making Babric mods for BTA!
+This mod introduces exciting new mechanics to enhance your Minecraft gameplay with a dynamic and challenging experience. Explore the key features below:
 
-**Note: *DO NOT fork this repository unless you want to contribute!***
+- **Enhanced Health System**: Expand your survival capabilities with the ability to gain additional health bars beyond the default limit.
+- **Health Point Progression**: Unlock more health points through gameplay achievements, rewarding skillful play and survival.
+- **Dynamic Difficulty System**: Experience a difficulty that evolves as you play, adapting to your progress:
+    - **Point-Based Progression**: Earn points through actions like killing enemies and surviving days, which increase your difficulty level.
+    - **Stronger Enemy Attacks**: Enemies deal more damage as the difficulty scales, making combat more intense.
+    - **Increased Enemy Health**: Enemies grow tougher over time, with higher health pools challenging your combat skills.
+    - **Penalty on Death**: Lose points when you die, adding weight to every survival decision.
+    - **Rewards for Survival**: Gain points for defeating enemies, surviving days, and other milestones, encouraging strategic play.
+- **Enhanced Armored Zombies**: Encounter zombies equipped with a wider variety of armor sets, making them tougher opponents.
+- **New Skeleton Armored Mob**: Face a dangerous new skeleton variant with enhanced armor, adding a thrilling challenge to your adventures.
 
-## Prerequisites
-- JDK for Java 17 ([Eclipse Temurin](https://adoptium.net/temurin/releases/) recommended)
-- [Intellij IDEA](https://www.jetbrains.com/idea/download/) (Scroll down for the free community edition, if using linux **DO NOT** use the flatpak distribution)
-- Minecraft Development plugin (Optional, but highly recommended)
+# Configuration
 
-## Setup instructions
-   
+Customize your gameplay experience with flexible configuration options tailored to your preferences.
 
-1. Click the `Use this template` button on this repo's page above (Will only appear if logged in). Choose `Create a new repository`, you will be redirected to a new page. Enter your repo's name and description, and hit `Create repository`.  
-   To get your project, open IntelliJ IDEA and click `Get from VCS`. Select `Repository URL` and enter your repo's url
+### TOML Configuration
+Adjust key mod settings through an intuitive TOML configuration file. Fine-tune values such as difficulty scaling, point rewards, and health mechanics to suit your playstyle.
 
-2. After the project has finished importing, close it and open it again.  
-   If that does not work, open the right sidebar with `Gradle` on it, open `Tasks` > `fabric` and run `ideaSyncTask`.
+### Gamerules
+The mod introduces several gamerules, allowing you to toggle features for a personalized experience. Use these in-game to enable or disable specific mechanics:
 
-3. Create a new run configuration by going in `Run > Edit Configurations`.  
-   Then click on the plus icon and select Gradle. In the `Tasks and Arguments` field enter `build`.  
-   Running it will build your finished jar files and put them in `build/libs/`.
-
-4. Lastly, open `File` > `Settings` and head to `Build, Execution, Development` > `Build Tools` > `Gradle`.  
-   Make sure `Build and run using` and `Run tests using` is set to `Gradle`.
-
-5. Done! Now, all that's left is to change every mention of `examplemod` and `turniplabs` to your own mod id and mod group, respectively. Happy modding!
-
-## Tips
-
-1. If you haven't already you should join the BTA modding discord! https://discord.gg/FTUNJhswBT
-2. You can set your username when launching the client run configuration by setting `--username <username>` in your program arguments.
-3. When launching the server run configuration you may want to remove the `nogui` program argument in order to see the regular server GUI.
-4. In Intellij you can double press shift or press ctrl+N to search class files, change the search from the default `Project Files` to `All Places` you can easily explore the classes for you dependencies and even BTA itself.
-5. In Intellij if ctrl+left click on a field or method you can quickly get information on when and where that field or method is assign or used.
-
+- **`DYNAMIC_DIFFICULTY`**: Enable or disable the dynamic difficulty system that scales with your progress.
+- **`ARMORED_ZOMBIES_PLUS`**: Toggle enhanced armor sets for zombies, increasing their durability and challenge.
+- **`MORE_HEARTS`**: Allow players to gain additional health bars beyond the default limit.
+- **`MP_NEARBY_PLAYER_AFFECTS`**: Enable multiplayer interactions where nearby players influence difficulty scaling.
+- **`DAY_SURVIVED_MESSAGE`**: Toggle in-game messages that notify you of survived days, keeping you informed of your progress.
