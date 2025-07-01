@@ -14,7 +14,7 @@ public class ItemOlivineHeart extends ItemFood {
 	@Override
 	public ItemStack onUseItem(ItemStack itemstack, World world, Player entityplayer) {
 		ItemStack i = super.onUseItem(itemstack, world, entityplayer);
-		((IPainScalePlayer)entityplayer).ps$setMaxHealth(entityplayer.getMaxHealth() + 1);
+		((IPainScalePlayer)entityplayer).ps$setMaxHealth(entityplayer.getMaxHealth() + 2);
 		entityplayer.sendMessage("Current health: " + entityplayer.getMaxHealth());
 		i.consumeItem(entityplayer);
 		return i;

@@ -130,21 +130,38 @@ public class HudComponentHealthBarMixin extends HudComponentMovable {
 		}
 	}
 
-	@Unique
 	private float[] rngColor(int row) {
-		// Normalizamos la fila para que esté entre 0 y 1
-		float t = Math.min((float) row / 5.0f, 1.0f); // Ajusta el divisor según el número máximo de filas
-		float[] startColor = {1.0f, 0.0f, 0.0f}; // Rojo (cálido)
-		float[] endColor = {0.0f, 0.0f, 1.0f};   // Azul (frío)
+		// Definir múltiples colores para la interpolación
+		float[][] colors = {
+			{1.0f, 0.0f, 0.0f}, // Rojo
+			{0.0f, 0.0f, 1.0f},  // Azul
+			{0.0f, 1.0f, 0.0f}, // Verde
+			{1.0f, 1.0f, 0.0f} // Amarillo
+
+		};
+
+		// Normalizar la fila para que esté entre 0 y 1
+		float t = Math.min((float) row / 10.0f, 1.0f);
+		// Escalar t para mapear a los segmentos de color
+		float segmentCount = colors.length - 1; // Número de segmentos entre colores
+		float scaledT = t * segmentCount;
+		int startIndex = (int) Math.floor(scaledT);
+		if (startIndex >= segmentCount) {
+			startIndex = (int) (segmentCount - 1); // Último color si t está en el límite
+		}
+		float localT = scaledT - startIndex; // Fracción dentro del segmento
+
+		// Obtener los colores de inicio y fin para el segmento actual
+		float[] startColor = colors[startIndex];
+		float[] endColor = colors[(int) Math.min(startIndex + 1, segmentCount)];
 
 		// Interpolación lineal
-		float r = startColor[0] + t * (endColor[0] - startColor[0]);
-		float g = startColor[1] + t * (endColor[1] - startColor[1]);
-		float b = startColor[2] + t * (endColor[2] - startColor[2]);
+		float r = startColor[0] + localT * (endColor[0] - startColor[0]);
+		float g = startColor[1] + localT * (endColor[1] - startColor[1]);
+		float b = startColor[2] + localT * (endColor[2] - startColor[2]);
 
 		return new float[]{r, g, b};
 	}
-
 
 
 	@Override
