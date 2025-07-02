@@ -15,31 +15,22 @@ import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Arrays;
 import java.util.Random;
 
-@Mixin(HudComponentHealthBar.class)
-public class HudComponentHealthBarMixin extends HudComponentMovable {
-	private final Random random = new Random();
+@Mixin(value = HudComponentHealthBar.class, priority = 900, remap = false)
+public class HudComponentHealthBarMixin  {
+	@Unique private final Random random = new Random();
 
-	public HudComponentHealthBarMixin(String key, int xSize, int ySize, Layout layout) {
-		super(key, xSize, ySize, layout);
-	}
-
-	public boolean isVisible(Minecraft mc) {
-		return mc.playerController.canHurtPlayer() && !mc.thePlayer.getGamemode().isPlayerInvulnerable() && mc.gameSettings.immersiveMode.drawHotbar();
-	}
-
-	/**
-	 * @author Garkatron
-	 * @reason Draw more hearts
-	 * @implNote The same method as the original but allow more hearts. Note: I used AI because I was too lazy to do the calculations myself.
-	 */
-	@Overwrite(remap = false)
-	public void render(Minecraft mc, HudIngame hud, int xSizeScreen, int ySizeScreen, float partialTick) {
-		int x = this.getLayout().getComponentX(mc, this, xSizeScreen);
-		int y = this.getLayout().getComponentY(mc, this, ySizeScreen);
+	@Inject(method = "render", at = @At("HEAD"), cancellable = true, remap = false)
+	public void render(Minecraft mc, HudIngame hud, int xSizeScreen, int ySizeScreen, float partialTick, CallbackInfo ci) {
+		HudComponentMovable self = (HudComponentMovable) (Object) this;
+		int x = self.getLayout().getComponentX(mc, self, xSizeScreen);
+		int y = self.getLayout().getComponentY(mc, self, ySizeScreen);
 		GL11.glColor4f(1.0F, 0.0F, 1.0F, 1.0F);
 		GL11.glDisable(3042);
 
@@ -128,8 +119,10 @@ public class HudComponentHealthBarMixin extends HudComponentMovable {
 			// Reset color to white for next container or heart
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		}
+		ci.cancel();
 	}
 
+	@Unique
 	private float[] rngColor(int row) {
 		// Definir múltiples colores para la interpolación
 		float[][] colors = {
@@ -161,27 +154,5 @@ public class HudComponentHealthBarMixin extends HudComponentMovable {
 		float b = startColor[2] + localT * (endColor[2] - startColor[2]);
 
 		return new float[]{r, g, b};
-	}
-
-
-	@Override
-	public void renderPreview(Minecraft mc, Gui gui, Layout layout, int xSizeScreen, int ySizeScreen) {
-		int x = layout.getComponentX(mc, this, xSizeScreen);
-		int y = layout.getComponentY(mc, this, ySizeScreen);
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		GL11.glDisable(3042);
-		int health = 11;
-
-		for(int i = 0; i < 10; ++i) {
-			int xHeart = x + i * 8;
-			gui.drawGuiIcon(xHeart, y, 9, 9, TextureRegistry.getTexture("minecraft:gui/hud/heart/container"));
-			if (i * 2 + 1 < health) {
-				gui.drawGuiIcon(xHeart, y, 9, 9, TextureRegistry.getTexture("minecraft:gui/hud/heart/full"));
-			}
-
-			if (i * 2 + 1 == health) {
-				gui.drawGuiIcon(xHeart, y, 9, 9, TextureRegistry.getTexture("minecraft:gui/hud/heart/half"));
-			}
-		}
 	}
 }
