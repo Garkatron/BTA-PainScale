@@ -25,7 +25,7 @@ import java.util.List;
 
 import static deus.painscale.PainScaleMod.ARMORED_ZOMBIES_PLUS;
 
-@Mixin(value = MobZombieArmored.class, remap = false)
+@Mixin(value = MobZombieArmored.class, priority = 1001, remap = false)
 public class MobZombieArmoredMixin extends MobZombie implements IPainScaleMobInventory {
 
 	@Unique

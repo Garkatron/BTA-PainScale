@@ -2,6 +2,7 @@ package deus.painscale.mixin;
 
 import deus.painscale.PainScaleMod;
 import deus.painscale.entity.mob_skeleton_armored.MobSkeletonArmored;
+import deus.painscale.entity.mob_zombie_armored.MobPainScaleZombieArmored;
 import net.minecraft.core.entity.SpawnListEntry;
 import net.minecraft.core.world.biome.Biome;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,8 +22,9 @@ public abstract class BiomeMixin {
 	@Inject(method = "<init>", at = @At("TAIL"), remap = false)
 	private void onConstructed(String key, CallbackInfo ci) {
 		if (PainScaleMod.CFG.getBoolean("Enemies.armored_skeletons")) {
-			this.spawnableMonsterList.add(new SpawnListEntry(MobSkeletonArmored.class, 8));
+			this.spawnableMonsterList.add(new SpawnListEntry(MobSkeletonArmored.class, 6));
 		}
-
+		this.spawnableMonsterList.add(new SpawnListEntry(MobPainScaleZombieArmored.class, 4));
+		this.spawnableMonsterList.remove(3); // Bye Bye Mob Zombie Armored :) 😈
 	}
 }
