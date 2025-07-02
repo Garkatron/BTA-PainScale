@@ -1,0 +1,25 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "deus.painscale.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "BiomeMixin",
+    "MobMixin",
+    "SpawnerMobsMixin",
+    "mobs.mob.MobMixin",
+    "mobs.mob_monster.MobMonsterMixin",
+    "player.PlayerMixin"
+  ],
+  "client": [
+    "HudComponentHealthBarMixin",
+    "IAEntityDispatcher",
+    "MinecraftMixin",
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "server": [
+    "PlayerListMixin"
+  ]
+}

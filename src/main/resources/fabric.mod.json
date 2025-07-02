@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "id": "painscale",
+  "version": "${version}",
+
+  "name": "Pain Scale 😈",
+  "description": "This mod aims to punish bta players.",
+  "authors": [
+    "@Garkatron"
+  ],
+  "contact": {
+    "homepage": "",
+    "sources": ""
+  },
+
+	"icon": "icon.png",
+  "license": "CC0-1.0",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+			"deus.painscale.PainScaleMod"
+    ],
+		"beforeGameStart": [
+			"deus.painscale.PainScaleMod"
+		],
+		"afterGameStart": [
+			"deus.painscale.PainScaleMod"
+		],
+		"recipesReady": [
+			"deus.painscale.PainScaleMod"
+		],
+		"initModels": [
+			"deus.painscale.PainScaleModels"
+		]
+	},
+  "mixins": [
+		"painscale.mixins.json"
+  ],
+
+  "depends": {
+		"minecraft": "*",
+    "fabricloader": ">=0.15.5"
+  },
+  "suggests": {
+  }
+}

@@ -1,0 +1,14 @@
+package deus.painscale.item;
+
+import deus.painscale.PainScaleMod;
+import net.minecraft.core.item.Item;
+import turniplabs.halplibe.helper.ItemBuilder;
+
+public class PainScaleItems {
+	public static Item OLIVINE_HEART;
+	private static final ItemBuilder itemBuilder = new ItemBuilder(PainScaleMod.MOD_ID);
+
+	public static void init() {
+		OLIVINE_HEART = itemBuilder.build(new ItemOlivineHeart("olivine_heart", "painscale:item/olivine_heart", 20001, 20, 1, false,1));
+	}
+}
