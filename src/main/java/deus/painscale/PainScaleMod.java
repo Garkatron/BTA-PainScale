@@ -48,8 +48,7 @@ public class PainScaleMod implements ModInitializer, RecipeEntrypoint, GameStart
 
 	static {
 		TOML.addCategory("IDs")
-			.addEntry("starting_item_id", 19000)
-			.addEntry("starting_block_id", 11000);
+			.addEntry("olivine_heart", 25000);
 
 		TOML.addCategory("Levels")
 			.addEntry("min_df_points_to_grow_up", 10)
