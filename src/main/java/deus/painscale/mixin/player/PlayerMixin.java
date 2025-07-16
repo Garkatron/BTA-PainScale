@@ -60,6 +60,7 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 		tag.putInt("PsDfPointsRemaining", dfPointsToGrow);
 		tag.putDouble("PsDfPointsToGrowMultiplier", dfPointsToGrowMultiplier);
 		tag.putInt("PsDfMaxHealth", Math.max(maxHealth, 20));
+		tag.putInt("PsDfSurvivedDayCount", survivedDayCount);
 	}
 
 	@Inject(method = "readAdditionalSaveData", at = @At("TAIL"), remap = false)
@@ -69,7 +70,7 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 		maxHealth = Math.max(tag.getInteger("PsDfMaxHealth"), 20);
 		dfPointsToGrow = tag.getInteger("PsDfPointsRemaining");
 		dfPointsToGrowMultiplier = tag.getDouble("PsDfPointsToGrowMultiplier");
-
+		survivedDayCount = tag.getInteger("PsDfSurvivedDayCount");
 	}
 
 	@ModifyReturnValue(
