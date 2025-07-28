@@ -24,7 +24,7 @@ import static deus.painscale.PainScaleMod.MORE_HEARTS;
 @Mixin(value = Player.class, remap = false)
 public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 
-	@Unique protected int dfLevel = 0;
+	@Unique protected int dfLevel = PainScaleMod.CFG.getInt("Levels.minimum_level");
 	@Unique protected int dfPoints = 0;
 	@Unique protected int dfPointsToGrow = 10;
 	@Unique protected double dfPointsToGrowMultiplier = 0;
@@ -52,7 +52,7 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 
 	@Inject(method = "addAdditionalSaveData", at = @At("TAIL"), remap = false)
 	public void modifiedAddAdditionalSaveData(CompoundTag tag, CallbackInfo ci) {
-		tag.putInt("PsDfLevel", dfLevel);
+		tag.putInt("PsDfLevel", Math.max(PainScaleMod.CFG.getInt("Levels.minimum_level"), dfLevel));
 		tag.putInt("PsDfPoints", dfPoints);
 		tag.putInt("PsDfPointsRemaining", dfPointsToGrow);
 		tag.putDouble("PsDfPointsToGrowMultiplier", dfPointsToGrowMultiplier);
@@ -62,7 +62,7 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 
 	@Inject(method = "readAdditionalSaveData", at = @At("TAIL"), remap = false)
 	public void modifiedReadAdditionalSaveData(CompoundTag tag, CallbackInfo ci) {
-		dfLevel = tag.getInteger("PsDfLevel");
+		dfLevel = Math.max(PainScaleMod.CFG.getInt("Levels.minimum_level"), tag.getInteger("PsDfLevel"));
 		dfPoints = tag.getInteger("PsDfPoints");
 		maxHealth = Math.max(tag.getInteger("PsDfMaxHealth"), 20);
 		dfPointsToGrow = tag.getInteger("PsDfPointsRemaining");
@@ -142,20 +142,24 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 
 	@Override
 	public void ps$subPoints(int amount) {
+		if (amount <= 0) return;
+
 		if (dfPoints >= amount) {
 			dfPoints -= amount;
 			dfPointsToGrow += amount;
 		} else {
 			int spent = dfPoints;
 			dfPoints = 0;
-
 			dfPointsToGrow += spent;
 
-			if (dfLevel > PainScaleMod.CFG.getInt("Levels.minimum_level")) {
+			// Asegurarse de no bajar del nivel mínimo
+			int minLevel = PainScaleMod.CFG.getInt("Levels.minimum_level");
+			if (dfLevel > minLevel) {
 				dfLevel--;
 			}
 		}
 	}
+
 
 	@Override
 	public void ps$addLevels(int amount) {

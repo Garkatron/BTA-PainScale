@@ -53,7 +53,7 @@ public class PainScaleMod implements ModInitializer, RecipeEntrypoint, GameStart
 		TOML.addCategory("Levels")
 			.addEntry("min_points_to_level_up", 10) // Minimum points required to level up
 			.addEntry("points_per_level_multiplier", 50.0) // Points multiplier per level
-			.addEntry("minimum_level", 0) // Minimum allowed level
+			.addEntry("minimum_level", 1) // Minimum allowed level
 			.addEntry("maximum_level", 100); // Maximum allowed level
 
 		TOML.addCategory("Enemies")

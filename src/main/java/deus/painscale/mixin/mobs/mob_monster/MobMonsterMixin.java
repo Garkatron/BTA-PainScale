@@ -7,9 +7,12 @@ import deus.painscale.api.IPainScaleMob;
 import deus.painscale.api.IPainScaleMobMonster;
 import deus.painscale.api.IPainScalePlayer;
 import net.minecraft.core.entity.Entity;
+import net.minecraft.core.entity.MobPathfinder;
 import net.minecraft.core.entity.monster.MobMonster;
 import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.util.helper.DamageType;
+import net.minecraft.core.world.World;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -20,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = MobMonster.class, remap = false)
-public class MobMonsterMixin implements IPainScaleMobMonster {
+public class MobMonsterMixin extends MobPathfinder implements IPainScaleMobMonster {
 
 	@Shadow(remap = false) protected int attackStrength;
 
@@ -31,6 +34,22 @@ public class MobMonsterMixin implements IPainScaleMobMonster {
 
 	@Unique
 	double healthMultiplier = 1.0;
+
+	public MobMonsterMixin(@Nullable World world) {
+		super(world);
+	}
+
+	@Override
+	public void onDeath(Entity entityKilledBy) {
+		super.onDeath(entityKilledBy);
+		if (entityKilledBy instanceof Player player) {
+			IPainScalePlayer p = (IPainScalePlayer) player;
+			IPainScaleMob mob = (IPainScaleMob) (Object) this;
+			int points = (int) Math.max(PainScaleMod.CFG.getInt("Points.base_points_per_monster"), mob.ps$getPointsMultiplier() * dfLevel);
+			p.ps$addPoints(points);
+			System.out.println("EXTRA; " + points);
+		}
+	}
 
 	@Override
 	public void ps$setAttackPowerMultiplier(double multiplier) {
@@ -106,6 +125,8 @@ public class MobMonsterMixin implements IPainScaleMobMonster {
 			return original;
 		}
     }
+
+
 
 	@Inject(method = "addAdditionalSaveData", at = @At("TAIL"), remap = false)
 	public void modifiedAddAdditionalSaveData(CompoundTag tag, CallbackInfo ci) {

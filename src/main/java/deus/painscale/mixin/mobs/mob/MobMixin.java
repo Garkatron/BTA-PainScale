@@ -28,4 +28,8 @@ public class MobMixin implements IPainScaleMob {
 	}
 
 
+	@Override
+	public double ps$getPointsMultiplier() {
+		return dfPointsMultiplier;
+	}
 }
