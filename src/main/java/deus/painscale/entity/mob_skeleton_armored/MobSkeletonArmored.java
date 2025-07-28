@@ -68,7 +68,9 @@ public class MobSkeletonArmored extends MobSkeleton implements IPainScaleMobInve
 		if (damageType != null && damageType.shouldDamageArmor()) {
 			int armorDamage = (int)Math.ceil((double)preventedDamage / 4.0);
 			this.inventory.damageArmor(armorDamage);
+
 		}
+
 
 		super.damageEntity(newDamage, damageType);
 	}

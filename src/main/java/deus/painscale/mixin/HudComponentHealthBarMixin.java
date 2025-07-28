@@ -1,30 +1,26 @@
 package deus.painscale.mixin;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.hud.HudIngame;
 import net.minecraft.client.gui.hud.component.HudComponentHealthBar;
 import net.minecraft.client.gui.hud.component.HudComponentMovable;
-import net.minecraft.client.gui.hud.component.layout.Layout;
 import net.minecraft.client.render.texture.stitcher.TextureRegistry;
 import net.minecraft.core.item.ItemBucketIceCream;
 import net.minecraft.core.item.ItemFood;
-import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.gamemode.Gamemode;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Arrays;
 import java.util.Random;
 
 @Mixin(value = HudComponentHealthBar.class, priority = 900, remap = false)
-public class HudComponentHealthBarMixin  {
-	@Unique private final Random random = new Random();
+public class HudComponentHealthBarMixin {
+	@Unique
+	private final Random random = new Random();
 
 	@Inject(method = "render", at = @At("HEAD"), cancellable = true, remap = false)
 	public void render(Minecraft mc, HudIngame hud, int xSizeScreen, int ySizeScreen, float partialTick, CallbackInfo ci) {
@@ -97,12 +93,12 @@ public class HudComponentHealthBarMixin  {
 			}
 
 			// Preview healing
-			if (mc.thePlayer.inventory.getCurrentItem() != null && (mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemFood || mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemBucketIceCream) && (Boolean)mc.gameSettings.foodHealthRegenOverlay.value) {
+			if (mc.thePlayer.inventory.getCurrentItem() != null && (mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemFood || mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemBucketIceCream) && mc.gameSettings.foodHealthRegenOverlay.value) {
 				int healing;
 				if (mc.thePlayer.inventory.getCurrentItem().getItem() instanceof ItemFood) {
-					healing = ((ItemFood)mc.thePlayer.inventory.getCurrentItem().getItem()).getHealAmount();
+					healing = ((ItemFood) mc.thePlayer.inventory.getCurrentItem().getItem()).getHealAmount();
 				} else {
-					healing = ((ItemBucketIceCream)mc.thePlayer.inventory.getCurrentItem().getItem()).getHealAmount();
+					healing = ((ItemBucketIceCream) mc.thePlayer.inventory.getCurrentItem().getItem()).getHealAmount();
 				}
 
 				if (i * 2 + 1 >= health) {
@@ -124,31 +120,26 @@ public class HudComponentHealthBarMixin  {
 
 	@Unique
 	private float[] rngColor(int row) {
-		// Definir múltiples colores para la interpolación
 		float[][] colors = {
-			{1.0f, 0.0f, 0.0f}, // Rojo
-			{0.0f, 0.0f, 1.0f},  // Azul
-			{0.0f, 1.0f, 0.0f}, // Verde
-			{1.0f, 1.0f, 0.0f} // Amarillo
+			{1.0f, 0.0f, 0.0f},
+			{0.0f, 0.0f, 1.0f},
+			{0.0f, 1.0f, 0.0f},
+			{1.0f, 1.0f, 0.0f}
 
 		};
 
-		// Normalizar la fila para que esté entre 0 y 1
 		float t = Math.min((float) row / 10.0f, 1.0f);
-		// Escalar t para mapear a los segmentos de color
-		float segmentCount = colors.length - 1; // Número de segmentos entre colores
+		float segmentCount = colors.length - 1;
 		float scaledT = t * segmentCount;
 		int startIndex = (int) Math.floor(scaledT);
 		if (startIndex >= segmentCount) {
-			startIndex = (int) (segmentCount - 1); // Último color si t está en el límite
+			startIndex = (int) (segmentCount - 1);
 		}
-		float localT = scaledT - startIndex; // Fracción dentro del segmento
+		float localT = scaledT - startIndex;
 
-		// Obtener los colores de inicio y fin para el segmento actual
 		float[] startColor = colors[startIndex];
 		float[] endColor = colors[(int) Math.min(startIndex + 1, segmentCount)];
 
-		// Interpolación lineal
 		float r = startColor[0] + localT * (endColor[0] - startColor[0]);
 		float g = startColor[1] + localT * (endColor[1] - startColor[1]);
 		float b = startColor[2] + localT * (endColor[2] - startColor[2]);

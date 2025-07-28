@@ -1,72 +1,270 @@
 package deus.painscale.mechanics;
 
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import deus.painscale.PainScaleMod;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.item.IArmorItem;
 import net.minecraft.core.item.Item;
 import net.minecraft.core.item.Items;
 
-import java.util.ArrayList;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
+import java.lang.reflect.Type;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ArmorSets {
-	public static final NavigableMap<Integer, List<List<IArmorItem>>> SETS = new TreeMap<>();
 	public static final List<IArmorItem> defaultSet = new ArrayList<>();
+	public static final NavigableMap<Integer, List<List<IArmorItem>>> SETS = new TreeMap<>();
+	public static final HashMap<String, IArmorItem> armorList = new HashMap<>();
+	private static final String CONFIG_DIRECTORY = FabricLoader.getInstance().getGameDir().toString() + "/config/";
+	private static final Path CONFIG_PATH = Path.of(CONFIG_DIRECTORY + "/" + PainScaleMod.MOD_ID + "_armor_sets.json");
 
 	public static void initialize() {
-		defaultSet.add((IArmorItem) null);
-		defaultSet.add((IArmorItem) null);
-		defaultSet.add((IArmorItem) null);
-		defaultSet.add((IArmorItem) Items.ARMOR_HELMET_CHAINMAIL);
+		// Default armor set
+		defaultSet.add(null);
+		defaultSet.add(null);
+		defaultSet.add(null);
+		defaultSet.add((IArmorItem) Items.ARMOR_HELMET_LEATHER);
 
-		register(0, Items.ARMOR_BOOTS_LEATHER, Items.ARMOR_LEGGINGS_LEATHER);
-		register(0, Items.ARMOR_CHESTPLATE_CHAINMAIL, Items.ARMOR_HELMET_CHAINMAIL);
+		// === Add all armor items to armorList ===
+		addToArmorList(Items.ARMOR_BOOTS_CHAINMAIL);
+		addToArmorList(Items.ARMOR_LEGGINGS_CHAINMAIL);
+		addToArmorList(Items.ARMOR_CHESTPLATE_CHAINMAIL);
+		addToArmorList(Items.ARMOR_HELMET_CHAINMAIL);
 
-		register(0, Items.ARMOR_BOOTS_CHAINMAIL, Items.ARMOR_LEGGINGS_CHAINMAIL);
-		register(0, Items.ARMOR_CHESTPLATE_LEATHER, Items.ARMOR_HELMET_LEATHER);
+		addToArmorList(Items.ARMOR_BOOTS_LEATHER);
+		addToArmorList(Items.ARMOR_LEGGINGS_LEATHER);
+		addToArmorList(Items.ARMOR_CHESTPLATE_LEATHER);
+		addToArmorList(Items.ARMOR_HELMET_LEATHER);
 
-		register(0, Items.ARMOR_BOOTS_LEATHER, Items.ARMOR_LEGGINGS_LEATHER, Items.ARMOR_CHESTPLATE_LEATHER, Items.ARMOR_HELMET_LEATHER);
-		register(0, Items.ARMOR_BOOTS_CHAINMAIL, Items.ARMOR_LEGGINGS_CHAINMAIL, Items.ARMOR_CHESTPLATE_CHAINMAIL, Items.ARMOR_HELMET_CHAINMAIL);
+		addToArmorList(Items.ARMOR_BOOTS_IRON);
+		addToArmorList(Items.ARMOR_LEGGINGS_IRON);
+		addToArmorList(Items.ARMOR_CHESTPLATE_IRON);
+		addToArmorList(Items.ARMOR_HELMET_IRON);
 
-		register(30, Items.ARMOR_BOOTS_CHAINMAIL, Items.ARMOR_LEGGINGS_CHAINMAIL);
-		register(30, Items.ARMOR_CHESTPLATE_IRON, Items.ARMOR_HELMET_IRON);
+		addToArmorList(Items.ARMOR_BOOTS_GOLD);
+		addToArmorList(Items.ARMOR_LEGGINGS_GOLD);
+		addToArmorList(Items.ARMOR_CHESTPLATE_GOLD);
+		addToArmorList(Items.ARMOR_HELMET_GOLD);
 
-		register(30, Items.ARMOR_BOOTS_IRON, Items.ARMOR_LEGGINGS_IRON);
-		register(30, Items.ARMOR_CHESTPLATE_CHAINMAIL, Items.ARMOR_HELMET_CHAINMAIL);
+		addToArmorList(Items.ARMOR_BOOTS_DIAMOND);
+		addToArmorList(Items.ARMOR_LEGGINGS_DIAMOND);
+		addToArmorList(Items.ARMOR_CHESTPLATE_DIAMOND);
+		addToArmorList(Items.ARMOR_HELMET_DIAMOND);
 
-		register(30, Items.ARMOR_BOOTS_CHAINMAIL, Items.ARMOR_LEGGINGS_CHAINMAIL, Items.ARMOR_CHESTPLATE_CHAINMAIL, Items.ARMOR_HELMET_CHAINMAIL);
-		register(30, Items.ARMOR_BOOTS_IRON, Items.ARMOR_LEGGINGS_IRON, Items.ARMOR_CHESTPLATE_IRON, Items.ARMOR_HELMET_IRON);
+		addToArmorList(Items.ARMOR_BOOTS_STEEL);
+		addToArmorList(Items.ARMOR_LEGGINGS_STEEL);
+		addToArmorList(Items.ARMOR_CHESTPLATE_STEEL);
+		addToArmorList(Items.ARMOR_HELMET_STEEL);
 
-		register(60, Items.ARMOR_BOOTS_IRON, Items.ARMOR_LEGGINGS_IRON);
-		register(60, Items.ARMOR_CHESTPLATE_DIAMOND, Items.ARMOR_HELMET_DIAMOND);
 
-		register(60, Items.ARMOR_BOOTS_DIAMOND, Items.ARMOR_LEGGINGS_DIAMOND);
-		register(60, Items.ARMOR_CHESTPLATE_IRON, Items.ARMOR_HELMET_IRON);
 
-		register(60, Items.ARMOR_BOOTS_IRON, Items.ARMOR_LEGGINGS_IRON, Items.ARMOR_CHESTPLATE_IRON, Items.ARMOR_HELMET_IRON);
-		register(60, Items.ARMOR_BOOTS_DIAMOND, Items.ARMOR_LEGGINGS_DIAMOND, Items.ARMOR_CHESTPLATE_DIAMOND, Items.ARMOR_HELMET_DIAMOND);
+		if (Files.exists(CONFIG_PATH)) {
+			try (Reader reader = Files.newBufferedReader(CONFIG_PATH)) {
+				PainScaleMod.LOGGER.info("Loading armor sets from " + PainScaleMod.MOD_ID + "_armor_sets.json");
+				Gson gson = new Gson();
 
-		register(90, Items.ARMOR_BOOTS_DIAMOND, Items.ARMOR_LEGGINGS_DIAMOND);
-		register(90, Items.ARMOR_CHESTPLATE_STEEL, Items.ARMOR_HELMET_STEEL);
+				Type type = new TypeToken<TreeMap<Integer, List<List<String>>>>(){}.getType();
+				TreeMap<Integer, List<List<String>>> config = gson.fromJson(reader, type);
 
-		register(90, Items.ARMOR_BOOTS_STEEL, Items.ARMOR_LEGGINGS_STEEL);
-		register(90, Items.ARMOR_CHESTPLATE_DIAMOND, Items.ARMOR_HELMET_DIAMOND);
+				config.forEach(
+					(level,sets)->{
+						List<String> cset = new ArrayList<>();
+						sets.forEach(cset::addAll);
+						register(level, cset);
 
-		register(90, Items.ARMOR_BOOTS_DIAMOND, Items.ARMOR_LEGGINGS_DIAMOND, Items.ARMOR_CHESTPLATE_DIAMOND, Items.ARMOR_HELMET_DIAMOND);
-		register(90, Items.ARMOR_BOOTS_STEEL, Items.ARMOR_LEGGINGS_STEEL, Items.ARMOR_CHESTPLATE_STEEL, Items.ARMOR_HELMET_STEEL);
+					}
+				);
 
-		register(100, Items.ARMOR_BOOTS_STEEL, Items.ARMOR_LEGGINGS_STEEL, Items.ARMOR_CHESTPLATE_STEEL, Items.ARMOR_HELMET_STEEL);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else {
+			createArmorConfig();
+		}
+
+		// === Register armor tiers using armorList ===
+
+
 	}
 
-	public static void register(int sinceLvl, Item... set) {
+	private static void createArmorConfig() {
+		PainScaleMod.LOGGER.info("Config doesn't exists, Registering armor sets from " + PainScaleMod.MOD_ID);
+
+		// Tier 0 - Leather
+		register(0,
+			get("minecraft:item/armor_boots_leather"),
+			get("minecraft:item/armor_leggings_leather"));
+		register(0,
+			get("minecraft:item/armor_chestplate_leather"),
+			get("minecraft:item/armor_helmet_leather"));
+		register(0,
+			get("minecraft:item/armor_boots_leather"),
+			get("minecraft:item/armor_leggings_leather"),
+			get("minecraft:item/armor_chestplate_leather"),
+			get("minecraft:item/armor_helmet_leather"));
+
+		// Tier 15 - Leather + Iron
+		register(15,
+			get("minecraft:item/armor_boots_iron"),
+			get("minecraft:item/armor_leggings_iron"),
+			get("minecraft:item/armor_chestplate_leather"),
+			get("minecraft:item/armor_helmet_leather"));
+		register(15,
+			get("minecraft:item/armor_boots_leather"),
+			get("minecraft:item/armor_leggings_leather"),
+			get("minecraft:item/armor_chestplate_iron"),
+			get("minecraft:item/armor_helmet_iron"));
+
+		// Tier 30 - Full Iron
+		register(30,
+			get("minecraft:item/armor_boots_iron"),
+			get("minecraft:item/armor_leggings_iron"));
+		register(30,
+			get("minecraft:item/armor_chestplate_iron"),
+			get("minecraft:item/armor_helmet_iron"));
+		register(30,
+			get("minecraft:item/armor_boots_iron"),
+			get("minecraft:item/armor_leggings_iron"),
+			get("minecraft:item/armor_chestplate_iron"),
+			get("minecraft:item/armor_helmet_iron"));
+
+		// Tier 45 - Iron + Gold
+		register(45,
+			get("minecraft:item/armor_boots_iron"),
+			get("minecraft:item/armor_leggings_iron"),
+			get("minecraft:item/armor_chestplate_gold"),
+			get("minecraft:item/armor_helmet_gold"));
+		register(45,
+			get("minecraft:item/armor_boots_gold"),
+			get("minecraft:item/armor_leggings_gold"),
+			get("minecraft:item/armor_chestplate_iron"),
+			get("minecraft:item/armor_helmet_iron"));
+
+		// Tier 50 - Full Gold
+		register(50,
+			get("minecraft:item/armor_boots_gold"),
+			get("minecraft:item/armor_leggings_gold"));
+		register(50,
+			get("minecraft:item/armor_chestplate_gold"),
+			get("minecraft:item/armor_helmet_gold"));
+		register(50,
+			get("minecraft:item/armor_boots_gold"),
+			get("minecraft:item/armor_leggings_gold"),
+			get("minecraft:item/armor_chestplate_gold"),
+			get("minecraft:item/armor_helmet_gold"));
+
+		// Tier 55 - Gold + Diamond
+		register(55,
+			get("minecraft:item/armor_boots_gold"),
+			get("minecraft:item/armor_leggings_gold"),
+			get("minecraft:item/armor_chestplate_diamond"),
+			get("minecraft:item/armor_helmet_diamond"));
+		register(55,
+			get("minecraft:item/armor_boots_diamond"),
+			get("minecraft:item/armor_leggings_diamond"),
+			get("minecraft:item/armor_chestplate_gold"),
+			get("minecraft:item/armor_helmet_gold"));
+
+
+		// Tier 60 - Full Diamond
+		register(60,
+			get("minecraft:item/armor_boots_diamond"),
+			get("minecraft:item/armor_leggings_diamond"));
+		register(60,
+			get("minecraft:item/armor_chestplate_diamond"),
+			get("minecraft:item/armor_helmet_diamond"));
+		register(60,
+			get("minecraft:item/armor_boots_diamond"),
+			get("minecraft:item/armor_leggings_diamond"),
+			get("minecraft:item/armor_chestplate_diamond"),
+			get("minecraft:item/armor_helmet_diamond"));
+
+		// Tier 75 - Diamond + Steel
+		register(75,
+			get("minecraft:item/armor_boots_diamond"),
+			get("minecraft:item/armor_leggings_diamond"),
+			get("minecraft:item/armor_chestplate_steel"),
+			get("minecraft:item/armor_helmet_steel"));
+		register(75,
+			get("minecraft:item/armor_boots_steel"),
+			get("minecraft:item/armor_leggings_steel"),
+			get("minecraft:item/armor_chestplate_diamond"),
+			get("minecraft:item/armor_helmet_diamond"));
+
+		// Tier 90 - Full Steel
+		register(90,
+			get("minecraft:item/armor_boots_steel"),
+			get("minecraft:item/armor_leggings_steel"));
+		register(90,
+			get("minecraft:item/armor_chestplate_steel"),
+			get("minecraft:item/armor_helmet_steel"));
+		register(90,
+			get("minecraft:item/armor_boots_steel"),
+			get("minecraft:item/armor_leggings_steel"),
+			get("minecraft:item/armor_chestplate_steel"),
+			get("minecraft:item/armor_helmet_steel"));
+
+		// Tier 100 - Final Tier (Steel)
+		register(100,
+			get("minecraft:item/armor_boots_steel"),
+			get("minecraft:item/armor_leggings_steel"),
+			get("minecraft:item/armor_chestplate_steel"),
+			get("minecraft:item/armor_helmet_steel"));
+
+
+		TreeMap<Integer, List<List<String>>> stuff = SETS.entrySet().stream().collect(
+			Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().stream().map(innerList -> innerList.stream().map(iArmorItem -> iArmorItem.asItem().namespaceID.toString()).collect(Collectors.toList())).collect(Collectors.toList()), (a, b) -> b, TreeMap::new)
+		);
+
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		String json = gson.toJson(stuff);
+		try (FileWriter fileWriter = new FileWriter(CONFIG_PATH.toFile())) {
+			fileWriter.write(json);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	// Helper to register armor items in the armorList
+	private static void addToArmorList(Item item) {
+		armorList.put(item.namespaceID.toString(), (IArmorItem) item);
+	}
+
+	// Helper to retrieve from armorList
+	private static IArmorItem get(String namespacedId) {
+		return armorList.get(namespacedId);
+	}
+
+
+	public static void register(int sinceLvl, IArmorItem... set) {
 		List<IArmorItem> armorSet = new ArrayList<>();
 
-		for (Item item : set) {
+		for (IArmorItem item : set) {
 			if (item == null) {
 				PainScaleMod.LOGGER.warn("Not an item");
-			} else if (!(item instanceof IArmorItem)) {
-				throw new IllegalArgumentException("Item " + item + " does not implement IArmorItem!");
 			}
-			armorSet.add((IArmorItem) item);
+			armorSet.add(item);
+		}
+
+		SETS.computeIfAbsent(sinceLvl, k -> new ArrayList<>()).add(armorSet);
+	}
+
+
+	public static void register(Integer sinceLvl, List<String> namespaces) {
+		List<IArmorItem> armorSet = new ArrayList<>();
+
+		for (String namespace : namespaces) {
+			IArmorItem armorItem = get(namespace);
+			if (armorItem!=null) {
+				armorSet.add(armorItem);
+			}
 		}
 
 		SETS.computeIfAbsent(sinceLvl, k -> new ArrayList<>()).add(armorSet);

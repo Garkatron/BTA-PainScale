@@ -14,7 +14,7 @@
   "client": [
     "HudComponentHealthBarMixin",
     "IAEntityDispatcher",
-    "MinecraftMixin",
+    "MinecraftMixin"
   ],
   "injectors": {
     "defaultRequire": 1

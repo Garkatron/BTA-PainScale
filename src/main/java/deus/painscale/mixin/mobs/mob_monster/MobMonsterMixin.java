@@ -3,6 +3,7 @@ package deus.painscale.mixin.mobs.mob_monster;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.mojang.nbt.tags.CompoundTag;
 import deus.painscale.PainScaleMod;
+import deus.painscale.api.IPainScaleMob;
 import deus.painscale.api.IPainScaleMobMonster;
 import deus.painscale.api.IPainScalePlayer;
 import net.minecraft.core.entity.Entity;
@@ -25,7 +26,6 @@ public class MobMonsterMixin implements IPainScaleMobMonster {
 
 	@Unique double attackPowerMultiplier = 1.0;
 
-	@Unique int dfPoints = 5;
 
 	@Unique int dfLevel = 0;
 
@@ -72,17 +72,12 @@ public class MobMonsterMixin implements IPainScaleMobMonster {
 		return healthMultiplier;
 	}
 
-	@Override
-	public void ps$setDfPoints(int points) {
-		this.dfPoints = points;
-	}
-
-	@Inject(method = "hurt", at = @At("TAIL"), remap = false)
-	public void test(Entity attacker, int i, DamageType type, CallbackInfoReturnable<Boolean> cir) {
-		if (attacker instanceof Player player) {
-			((IPainScalePlayer)player).ps$addPoints(dfPoints);
-		}
-	}
+//	@Inject(method = "hurt", at = @At("TAIL"), remap = false)
+//	public void test(Entity attacker, int i, DamageType type, CallbackInfoReturnable<Boolean> cir) {
+//		if (attacker instanceof Player player) {
+//			((IPainScalePlayer)player).ps$addPoints(PainScaleMod.CFG.getInt());
+//		}
+//	}
 
 	@Redirect(
 		method = "attackEntity(Lnet/minecraft/core/entity/Entity;F)V",
@@ -93,7 +88,7 @@ public class MobMonsterMixin implements IPainScaleMobMonster {
 	)
 	private boolean redirectAttackEntity(Entity instance, Entity attacker, int baseDamage, DamageType type) {
 		Entity e = (Entity) (Object) this;
-		if (PainScaleMod.CFG.getBoolean("Enemies.monster_strength_multiplier")) {
+		if (PainScaleMod.CFG.getBoolean("Enemies.scale_monster_strength")) {
 			float newDamage = (float)(this.attackStrength * attackPowerMultiplier);
 			return instance.hurt(attacker, (int) newDamage, type);
 		} else {
@@ -105,7 +100,7 @@ public class MobMonsterMixin implements IPainScaleMobMonster {
 		method = "getMaxHealth", at = @At("RETURN"), remap = false)
     private int modifyGetMaxHealth(int original) {
 		Entity e = (Entity) (Object) this;
-		if (PainScaleMod.CFG.getBoolean("Enemies.monster_health_multiplier")) {
+		if (PainScaleMod.CFG.getBoolean("Enemies.scale_monster_health")) {
 			return (int) Math.max(Math.round(original * healthMultiplier), original);
 		} else {
 			return original;
@@ -115,7 +110,7 @@ public class MobMonsterMixin implements IPainScaleMobMonster {
 	@Inject(method = "addAdditionalSaveData", at = @At("TAIL"), remap = false)
 	public void modifiedAddAdditionalSaveData(CompoundTag tag, CallbackInfo ci) {
 		tag.putInt("PsDfLevel", dfLevel);
-		tag.putInt("PsDfPoints", dfPoints);
+		//tag.putInt("PsDfPoints", dfPoints);
 		tag.putDouble("PsDfAttackPowerMultiplier", attackPowerMultiplier);
 		tag.putDouble("PsHealthMultiplier", healthMultiplier);
 	}
@@ -123,7 +118,7 @@ public class MobMonsterMixin implements IPainScaleMobMonster {
 	@Inject(method = "readAdditionalSaveData", at = @At("TAIL"), remap = false)
 	public void modifiedReadAdditionalSaveData(CompoundTag tag, CallbackInfo ci) {
 		dfLevel = tag.getInteger("PsDfLevel");
-		dfPoints = tag.getInteger("PsDfPoints");
+		//dfPoints = tag.getInteger("PsDfPoints");
 		attackPowerMultiplier = tag.getDouble("PsDfAttackPowerMultiplier");
 		healthMultiplier = tag.getDouble("PsHealthMultiplier");
 	}

@@ -32,7 +32,6 @@ public class PainScaleCommand implements CommandManager.CommandRegistry {
 
 				.then((ArgumentBuilderLiteral) buildModifier("add", true))
 				.then((ArgumentBuilderLiteral) buildModifier("sub", false))
-				.then((ArgumentBuilderLiteral) buildSet())
 				.then((ArgumentBuilderLiteral) buildReset())
 				.then((ArgumentBuilderLiteral) buildGet())
 
@@ -78,8 +77,8 @@ public class PainScaleCommand implements CommandManager.CommandRegistry {
 		);
 	}
 
-	private ArgumentBuilderLiteral<CommandSource> buildModifier(String literal, boolean isAdd) {
-		return (ArgumentBuilderLiteral) ArgumentBuilderLiteral.literal(literal)
+	private ArgumentBuilderLiteral buildModifier(String literal, boolean isAdd) {
+		return ArgumentBuilderLiteral.literal(literal)
 			.then(
 				ArgumentBuilderLiteral.literal("levels")
 					.then(
@@ -142,8 +141,8 @@ public class PainScaleCommand implements CommandManager.CommandRegistry {
 			);
 	}
 
-	private ArgumentBuilderLiteral<CommandSource> buildGet() {
-		return (ArgumentBuilderLiteral) ArgumentBuilderLiteral.literal("get")
+	private ArgumentBuilderLiteral buildGet() {
+		return ArgumentBuilderLiteral.literal("get")
 			.then(
 				ArgumentBuilderRequired.argument("targets", ArgumentTypeEntity.entities())
 					.executes(c -> {
@@ -190,35 +189,33 @@ public class PainScaleCommand implements CommandManager.CommandRegistry {
 		return entity;
 	}
 
-	private ArgumentBuilderLiteral<CommandSource> buildSet() {
-		return (ArgumentBuilderLiteral) ArgumentBuilderLiteral.literal("set")
-			.then(
-				ArgumentBuilderLiteral.literal("level")
-					.then(
-						ArgumentBuilderRequired.argument("targets", ArgumentTypeEntity.entities())
-							.then(
-								ArgumentBuilderRequired.argument("levels", ArgumentTypeInteger.integer())
-									.executes(c -> {
-										CommandSource source = (CommandSource) c.getSource();
-
-										List<? extends Entity> entities = c.getArgument("targets", EntitySelector.class).get((CommandSource) c.getSource());
-										int amount = c.getArgument("levels", Integer.class);
-
-										for (Entity entity : entities) {
-											if (entity instanceof Player) {
-												IPainScalePlayer player = (IPainScalePlayer) entity;
-												player.ps$setDifficultyLevel(amount);
-												player.ps$resetPoints();
-												source.sendMessage("Pain Scale levels: " + ((IPainScalePlayer) entity).ps$getDifficultyLevel());
-											}
-										}
-
-										return 1;
-									})
-							)
-					)
-			);
-	}
+//	private ArgumentBuilderLiteral buildSet() {
+//		return ArgumentBuilderLiteral.literal("set")
+//			.then(
+//				ArgumentBuilderRequired.argument("targets", ArgumentTypeEntity.entities())
+//					.then(
+//						ArgumentBuilderRequired.argument("level", ArgumentTypeInteger.integer())
+//							.executes(c -> {
+//								CommandSource source = (CommandSource) c.getSource();
+//
+//								List<? extends Entity> entities = c.getArgument("targets", EntitySelector.class).get((CommandSource) c.getSource());
+//								double rawLevel = c.getArgument("level", Double.class);
+//								int level = (int) rawLevel;
+//
+//								for (Entity entity : entities) {
+//									if (entity instanceof Player) {
+//										IPainScalePlayer player = (IPainScalePlayer) entity;
+//										player.ps$setDifficultyLevel(level);
+//										player.ps$resetPoints();
+//										source.sendMessage("Pain Scale levels: " + ((IPainScalePlayer) entity).ps$getDifficultyLevel());
+//									}
+//								}
+//
+//								return 1;
+//							})
+//					)
+//			);
+//	}
 
 
 	private ArgumentBuilderLiteral<CommandSource> buildReset() {
@@ -234,9 +231,9 @@ public class PainScaleCommand implements CommandManager.CommandRegistry {
 							if (entity instanceof Player) {
 								IPainScalePlayer player = (IPainScalePlayer) entity;
 								player.ps$setDifficultyLevel(0);
-								player.ps$resetPoints();
 								player.ps$resetLevels();
 								player.ps$resetMultiplier();
+								player.ps$resetPoints();
 								player.ps$setMaxHealth(20);
 								source.sendMessage("Pain Scale reset: " + ((Player) entity).getDisplayName());
 								count++;

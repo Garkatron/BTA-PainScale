@@ -28,7 +28,7 @@ import static deus.painscale.PainScaleMod.MP_NEARBY_PLAYER_AFFECTS;
 public class SpawnerMobsMixin implements IPainScaleSpawnerMobs {
 
 	@Unique
-	private static final int NEARBY_PLAYER_RADIUS = PainScaleMod.CFG.getInt("Multiplayer.nearby_player_radius");
+	private static final int NEARBY_PLAYER_RADIUS = PainScaleMod.CFG.getInt("Multiplayer.player_proximity_radius");
 
 	@Inject(
 		method = "performSpawning",

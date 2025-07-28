@@ -9,5 +9,4 @@ public interface IPainScaleMobMonster {
 	int ps$getDfLevel();
 	void ps$setDfLevel(int level);
 	double ps$getHealthMultiplier();
-	void ps$setDfPoints(int points);
 }

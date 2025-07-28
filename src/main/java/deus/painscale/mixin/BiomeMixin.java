@@ -21,7 +21,7 @@ public abstract class BiomeMixin {
 
 	@Inject(method = "<init>", at = @At("TAIL"), remap = false)
 	private void onConstructed(String key, CallbackInfo ci) {
-		if (PainScaleMod.CFG.getBoolean("Enemies.armored_skeletons")) {
+		if (PainScaleMod.CFG.getBoolean("Enemies.enable_armored_skeletons")) {
 			this.spawnableMonsterList.add(new SpawnListEntry(MobSkeletonArmored.class, 6));
 		}
 		this.spawnableMonsterList.add(new SpawnListEntry(MobPainScaleZombieArmored.class, 4));

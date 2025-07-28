@@ -1,15 +1,31 @@
 package deus.painscale.mixin.mobs.mob;
 
+import deus.painscale.PainScaleMod;
+import deus.painscale.api.IPainScaleMob;
+import deus.painscale.api.IPainScalePlayer;
+import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.Mob;
+import net.minecraft.core.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = Mob.class, remap = false)
-public class MobMixin {
-//	@Inject(method = "onDeath", at = @At("TAIL"), remap = false)
-//	public void addPointsOnDeath(Entity entityKilledBy, CallbackInfo ci) {
-//		if (entityKilledBy instanceof Player) {
-//
-//		}
-//		System.out.println("KILLED BY: " + entityKilledBy);
-//	}
+public class MobMixin implements IPainScaleMob {
+
+	@Unique double dfPointsMultiplier = PainScaleMod.CFG.getDouble("Points.points_per_level_multiplier_per_monster");
+
+	@Inject(method = "onDeath", at = @At("TAIL"), remap = false)
+	public void addPointsOnDeath(Entity entityKilledBy, CallbackInfo ci) {
+		if (entityKilledBy instanceof Player player) {
+			IPainScalePlayer p = (IPainScalePlayer) player;
+			int points = (int) Math.max(PainScaleMod.CFG.getInt("Points.base_points_per_monster"), dfPointsMultiplier * p.ps$getDifficultyLevel());
+			p.ps$addPoints(points);
+			System.out.println("GAINED; " + points);
+		}
+	}
+
+
 }

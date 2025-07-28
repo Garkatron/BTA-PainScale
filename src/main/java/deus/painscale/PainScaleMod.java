@@ -48,34 +48,37 @@ public class PainScaleMod implements ModInitializer, RecipeEntrypoint, GameStart
 
 	static {
 		TOML.addCategory("IDs")
-			.addEntry("olivine_heart", 25000);
+			.addEntry("item_id_olivine_heart", 25000);
 
 		TOML.addCategory("Levels")
-			.addEntry("min_df_points_to_grow_up", 10)
-			.addEntry("min_df_points_multiplier", 50.0)
-			.addEntry("min_df_level", 0)
-			.addEntry("max_df_level", 100);
+			.addEntry("min_points_to_level_up", 10) // Minimum points required to level up
+			.addEntry("points_per_level_multiplier", 50.0) // Points multiplier per level
+			.addEntry("minimum_level", 0) // Minimum allowed level
+			.addEntry("maximum_level", 100); // Maximum allowed level
 
 		TOML.addCategory("Enemies")
-			.addEntry("armored_skeletons", true)
-			.addEntry("monster_health_multiplier", true)
-			.addEntry("monster_strength_multiplier", true)
+			.addEntry("enable_armored_skeletons", true) // Enable armored skeleton enemies
+			.addEntry("scale_monster_health", true) // Scale monster health by level
+			.addEntry("scale_monster_strength", true) // Scale monster strength by level
 
-			.addEntry("start_attack_multiplier", 0.05)
-			.addEntry("base_attack_multiplier_per_level", 0.05)
+			.addEntry("base_attack_multiplier", 0.05) // Base attack multiplier for monsters
+			.addEntry("attack_multiplier_per_level", 0.05) // Additional attack multiplier per level
 
-			.addEntry("start_health_multiplier", 1.00)
-			.addEntry("base_health_multiplier_per_level", 0.05);
+			.addEntry("base_health_multiplier", 1.00) // Base health multiplier for monsters
+			.addEntry("health_multiplier_per_level", 0.05); // Additional health multiplier per level
 
 		TOML.addCategory("Multiplayer")
-			.addEntry("nearby_player_radius", 8);
+			.addEntry("player_proximity_radius", 8); // Radius for detecting nearby players
 
 		TOML.addCategory("Points")
-			.addEntry("point_cost_multiplier_per_level", 50.0)
-			.addEntry("gain_on_monster_attack", 1)
-			.addEntry("gain_per_survived_day_per_level", 20)
-			.addEntry("lose_on_death_per_level", 20)
-			.addEntry("lose_when_killed_by_player_per_level", 10);
+			.addEntry("base_points_per_monster", 10) // Base points awarded per monster killed
+			.addEntry("points_per_level_multiplier_per_monster", 10.0)
+			.addEntry("level_cost_points_multiplier", 50.0) // Multiplier for point cost per level
+			.addEntry("points_gained_per_monster_hit", 1) // Points gained per hit on a monster
+			.addEntry("points_per_day_survived_per_level", 20) // Points gained per day survived * current level
+			.addEntry("points_lost_on_death_per_level", 20) // Points lost on death * current level
+			.addEntry("points_lost_when_killed_by_player_per_level", 10); // Points lost when killed by another player * current level
+
 
 		CFG = new TomlConfigHandler(MOD_ID, TOML);
 
@@ -89,10 +92,10 @@ public class PainScaleMod implements ModInitializer, RecipeEntrypoint, GameStart
 	@Override
 	public void onInitialize() {
 
-		base_attack_multiplier_per_level = PainScaleMod.CFG.getDouble("Enemies.start_attack_multiplier");
-		base_health_multiplier_per_level = PainScaleMod.CFG.getDouble("Enemies.start_health_multiplier");
-		start_attack_multiplier = PainScaleMod.CFG.getDouble("Enemies.base_attack_multiplier_per_level");
-		start_health_multiplier = PainScaleMod.CFG.getDouble("Enemies.base_health_multiplier_per_level");
+		base_attack_multiplier_per_level = PainScaleMod.CFG.getDouble("Enemies.base_attack_multiplier");
+		base_health_multiplier_per_level = PainScaleMod.CFG.getDouble("Enemies.base_attack_multiplier");
+		start_attack_multiplier = PainScaleMod.CFG.getDouble("Enemies.attack_multiplier_per_level");
+		start_health_multiplier = PainScaleMod.CFG.getDouble("Enemies.attack_multiplier_per_level");
 
 		PainScaleItems.init();
 		CommandManager.registerCommand(new PainScaleCommand());

@@ -34,11 +34,8 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 	@Unique int dayCountLastTick = -1; // Initialize to -1 to ensure first day is detected
 	@Unique private boolean killedBy = false;
 
-	@Shadow(remap = false) @Final private int damageRemainder;
-	@Shadow(remap = false) public float cameraVelocity;
 	@Shadow(remap = false) public abstract void readAdditionalSaveData(@NotNull CompoundTag tag);
 	@Shadow public abstract void addAdditionalSaveData(@NotNull CompoundTag tag);
-	@Shadow public int portalID;
 	@Shadow public abstract void sendMessage(String string);
 
 	public PlayerMixin(@Nullable World world) {
@@ -96,12 +93,12 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 			int remainingToLevelUp = dfPointsToGrow;
 
 			if (amount >= remainingToLevelUp) {
-				dfLevel = Math.min(dfLevel + 1, PainScaleMod.CFG.getInt("Levels.max_df_level"));
+				dfLevel = Math.min(dfLevel + 1, PainScaleMod.CFG.getInt("Levels.maximum_level"));
 				amount -= remainingToLevelUp;
 
-				dfPointsToGrowMultiplier += PainScaleMod.CFG.getDouble("Levels.min_df_points_multiplier");
+				dfPointsToGrowMultiplier += PainScaleMod.CFG.getDouble("Levels.points_per_level_multiplier");
 				dfPointsToGrow = (int) Math.round(
-					PainScaleMod.CFG.getInt("Levels.min_df_points_to_grow_up") * dfPointsToGrowMultiplier
+					PainScaleMod.CFG.getInt("Levels.min_points_to_level_up") * dfPointsToGrowMultiplier
 				);
 			} else {
 				dfPointsToGrow -= amount;
@@ -120,7 +117,7 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 			} else if (currentDayCount != dayCountLastTick) {
 				dayCountLastTick = currentDayCount;
 				survivedDayCount++;
-				int points = PainScaleMod.CFG.getInt("Points.gain_per_survived_day_per_level") * dfLevel;
+				int points = PainScaleMod.CFG.getInt("Points.points_per_day_survived_per_level") * dfLevel;
 				ps$addPoints(points);
 				if (world.getGameRuleValue(DAY_SURVIVED_MESSAGE)) {
 					sendMessage("You have survived " + survivedDayCount + " days!");
@@ -133,7 +130,7 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 
 	@Inject(method = "attackTargetEntityWithCurrentItem", at = @At("TAIL"), remap = false)
 	public void addPointsOnAttackTargetEntityWithCurrentItem(Entity entity, CallbackInfo ci) {
-		ps$addPoints(PainScaleMod.CFG.getInt("Points.gain_on_monster_attack"));
+		ps$addPoints(PainScaleMod.CFG.getInt("Points.points_gained_per_monster_hit"));
 	}
 
 	@Inject(method = "onDeath", at = @At("TAIL"), remap = false)
@@ -154,7 +151,7 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 
 			dfPointsToGrow += spent;
 
-			if (dfLevel > PainScaleMod.CFG.getInt("Levels.min_df_level")) {
+			if (dfLevel > PainScaleMod.CFG.getInt("Levels.minimum_level")) {
 				dfLevel--;
 			}
 		}
@@ -169,7 +166,7 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 
 	@Override
 	public void ps$subLevels(int amount) {
-		int minLevel = PainScaleMod.CFG.getInt("Levels.min_df_level");
+		int minLevel = PainScaleMod.CFG.getInt("Levels.minimum_level");
 		for (int i = 0; i < amount; i++) {
 			if (dfLevel > minLevel) {
 				dfLevel--;
@@ -183,18 +180,18 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 
 	@Override
 	public void ps$resetMultiplier() {
-		dfPointsToGrowMultiplier = PainScaleMod.CFG.getDouble("Levels.min_df_points_multiplier");
+		dfPointsToGrowMultiplier = PainScaleMod.CFG.getDouble("Levels.points_per_level_multiplier");
 	}
 
 	@Override
 	public void ps$resetPoints() {
-		dfPointsToGrow = (int) Math.round(PainScaleMod.CFG.getInt("Levels.min_df_points_to_grow_up") * dfPointsToGrowMultiplier);
+		dfPointsToGrow = (int) Math.round(PainScaleMod.CFG.getDouble("Levels.points_per_level_multiplier") * dfPointsToGrowMultiplier);
 		dfPoints = 0;
 	}
 
 	@Override
 	public void ps$resetLevels() {
-		dfLevel = Math.min(dfLevel + 1, PainScaleMod.CFG.getInt("Levels.min_df_level"));
+		dfLevel = Math.min(dfLevel + 1, PainScaleMod.CFG.getInt("Levels.minimum_level"));
 		ps$resetPoints();
 	}
 
