@@ -3,7 +3,7 @@ package deus.painscale.mechanics;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import deus.painscale.PainScaleMod;
+import deus.painscale.PainScale;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.item.IArmorItem;
 import net.minecraft.core.item.Item;
@@ -23,7 +23,7 @@ public class ArmorSets {
 	public static final NavigableMap<Integer, List<List<IArmorItem>>> SETS = new TreeMap<>();
 	public static final HashMap<String, IArmorItem> armorList = new HashMap<>();
 	private static final String CONFIG_DIRECTORY = FabricLoader.getInstance().getGameDir().toString() + "/config/";
-	private static final Path CONFIG_PATH = Path.of(CONFIG_DIRECTORY + "/" + PainScaleMod.MOD_ID + "_armor_sets.json");
+	private static final Path CONFIG_PATH = Path.of(CONFIG_DIRECTORY + "/" + PainScale.MOD_ID + "_armor_sets.json");
 
 	public static void initialize() {
 		// Default armor set
@@ -67,7 +67,7 @@ public class ArmorSets {
 
 		if (Files.exists(CONFIG_PATH)) {
 			try (Reader reader = Files.newBufferedReader(CONFIG_PATH)) {
-				PainScaleMod.LOGGER.info("Loading armor sets from " + PainScaleMod.MOD_ID + "_armor_sets.json");
+				PainScale.LOGGER.info("Loading armor sets from " + PainScale.MOD_ID + "_armor_sets.json");
 				Gson gson = new Gson();
 
 				Type type = new TypeToken<TreeMap<Integer, List<List<String>>>>(){}.getType();
@@ -95,7 +95,7 @@ public class ArmorSets {
 	}
 
 	private static void createArmorConfig() {
-		PainScaleMod.LOGGER.info("Config doesn't exists, Registering armor sets from " + PainScaleMod.MOD_ID);
+		PainScale.LOGGER.info("Config doesn't exists, Registering armor sets from " + PainScale.MOD_ID);
 
 		// Tier 0 - Leather
 		register(0,
@@ -248,7 +248,7 @@ public class ArmorSets {
 
 		for (IArmorItem item : set) {
 			if (item == null) {
-				PainScaleMod.LOGGER.warn("Not an item");
+				PainScale.LOGGER.warn("Not an item");
 			}
 			armorSet.add(item);
 		}

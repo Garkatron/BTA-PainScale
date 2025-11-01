@@ -19,16 +19,16 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-			"deus.painscale.PainScaleMod"
+      "deus.painscale.PainScale"
     ],
 		"beforeGameStart": [
-			"deus.painscale.PainScaleMod"
+          "deus.painscale.PainScale"
 		],
 		"afterGameStart": [
-			"deus.painscale.PainScaleMod"
+          "deus.painscale.PainScale"
 		],
 		"recipesReady": [
-			"deus.painscale.PainScaleMod"
+          "deus.painscale.PainScaleRecipes"
 		],
 		"initModels": [
 			"deus.painscale.PainScaleModels"

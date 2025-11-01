@@ -1,5 +1,6 @@
 package deus.painscale.gui;
 
+import deus.painscale.PainScale;
 import deus.painscale.api.IPainScalePlayer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -8,7 +9,6 @@ import net.minecraft.client.gui.hud.component.ComponentAnchor;
 import net.minecraft.client.gui.hud.component.HudComponentMovable;
 import net.minecraft.client.gui.hud.component.layout.Layout;
 import net.minecraft.client.gui.hud.component.layout.LayoutSnap;
-import net.minecraft.core.player.gamemode.Gamemode;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -17,7 +17,6 @@ import java.awt.*;
 public class DifficultyMeter extends HudComponentMovable {
 	private final int width = 26;
 	private final int height = 16;
-	private static final long VISIBLE_DURATION_MS = 5000;
 
 	private long previousTime = 0;
 	private int lastDifficulty = -1;
@@ -25,6 +24,7 @@ public class DifficultyMeter extends HudComponentMovable {
 	public DifficultyMeter(String key, int xSize, int ySize, LayoutSnap layout) {
 		super(key, xSize, ySize, layout);
 		previousTime = System.currentTimeMillis();
+
 	}
 
 	@Override
@@ -71,7 +71,7 @@ public class DifficultyMeter extends HudComponentMovable {
 			elapsed = 0;
 		}
 
-		if (elapsed > VISIBLE_DURATION_MS) {
+		if (elapsed > PainScale.OPTIONS.get_ms_delay_level().value) {
 			return;
 		}
 

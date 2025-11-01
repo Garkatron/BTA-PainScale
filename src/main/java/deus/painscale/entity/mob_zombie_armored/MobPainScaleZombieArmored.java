@@ -2,16 +2,11 @@ package deus.painscale.entity.mob_zombie_armored;
 
 import com.mojang.nbt.tags.CompoundTag;
 import com.mojang.nbt.tags.ListTag;
-import deus.painscale.PainScaleMod;
 import deus.painscale.api.IPainScaleMobInventory;
 import deus.painscale.api.IPainScaleMobMonster;
-import deus.painscale.api.IPainScalePlayer;
 import deus.painscale.mechanics.ArmorSets;
 import deus.painscale.mobstuff.containers.MobContainerInventory;
-import net.minecraft.core.entity.Entity;
-import net.minecraft.core.entity.monster.MobSkeleton;
 import net.minecraft.core.entity.monster.MobZombieArmored;
-import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.IArmorItem;
 import net.minecraft.core.item.Item;
 import net.minecraft.core.item.ItemArmor;

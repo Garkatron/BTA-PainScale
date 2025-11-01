@@ -2,7 +2,7 @@ package deus.painscale.mixin.mobs.mob_monster;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.mojang.nbt.tags.CompoundTag;
-import deus.painscale.PainScaleMod;
+import deus.painscale.PainScale;
 import deus.painscale.api.IPainScaleMob;
 import deus.painscale.api.IPainScaleMobMonster;
 import deus.painscale.api.IPainScalePlayer;
@@ -20,7 +20,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = MobMonster.class, remap = false)
 public class MobMonsterMixin extends MobPathfinder implements IPainScaleMobMonster {
@@ -45,9 +44,8 @@ public class MobMonsterMixin extends MobPathfinder implements IPainScaleMobMonst
 		if (entityKilledBy instanceof Player player) {
 			IPainScalePlayer p = (IPainScalePlayer) player;
 			IPainScaleMob mob = (IPainScaleMob) (Object) this;
-			int points = (int) Math.max(PainScaleMod.CFG.getInt("Points.base_points_per_monster"), mob.ps$getPointsMultiplier() * dfLevel);
+			int points = (int) Math.max(PainScale.CFG.getInt("Points.base_points_per_monster"), mob.ps$getPointsMultiplier() * dfLevel);
 			p.ps$addPoints(points);
-			System.out.println("EXTRA; " + points);
 		}
 	}
 
@@ -107,7 +105,7 @@ public class MobMonsterMixin extends MobPathfinder implements IPainScaleMobMonst
 	)
 	private boolean redirectAttackEntity(Entity instance, Entity attacker, int baseDamage, DamageType type) {
 		Entity e = (Entity) (Object) this;
-		if (PainScaleMod.CFG.getBoolean("Enemies.scale_monster_strength")) {
+		if (PainScale.CFG.getBoolean("Enemies.scale_monster_strength")) {
 			float newDamage = (float)(this.attackStrength * attackPowerMultiplier);
 			return instance.hurt(attacker, (int) newDamage, type);
 		} else {
@@ -119,7 +117,7 @@ public class MobMonsterMixin extends MobPathfinder implements IPainScaleMobMonst
 		method = "getMaxHealth", at = @At("RETURN"), remap = false)
     private int modifyGetMaxHealth(int original) {
 		Entity e = (Entity) (Object) this;
-		if (PainScaleMod.CFG.getBoolean("Enemies.scale_monster_health")) {
+		if (PainScale.CFG.getBoolean("Enemies.scale_monster_health")) {
 			return (int) Math.max(Math.round(original * healthMultiplier), original);
 		} else {
 			return original;

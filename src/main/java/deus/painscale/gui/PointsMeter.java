@@ -1,5 +1,6 @@
 package deus.painscale.gui;
 
+import deus.painscale.PainScale;
 import deus.painscale.api.IPainScalePlayer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -15,7 +16,6 @@ import java.awt.*;
 public class PointsMeter extends HudComponentMovable {
 	private int width = 26;
 	private int height = 16;
-	private static final long VISIBLE_DURATION_MS = 6000;
 
 	private long previousTime = 0;
 	private int lastRemainingPoints = -1;
@@ -51,7 +51,7 @@ public class PointsMeter extends HudComponentMovable {
 			elapsed = 0;
 		}
 
-		if (elapsed > VISIBLE_DURATION_MS) {
+		if (elapsed > PainScale.OPTIONS.get_ms_delay_points().value) {
 			return;
 		}
 

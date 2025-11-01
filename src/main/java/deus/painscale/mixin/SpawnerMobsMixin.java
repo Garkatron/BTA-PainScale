@@ -1,7 +1,7 @@
 package deus.painscale.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import deus.painscale.PainScaleMod;
+import deus.painscale.PainScale;
 import deus.painscale.api.IPainScaleMobMonster;
 import deus.painscale.api.IPainScalePlayer;
 import deus.painscale.api.IPainScaleSpawnerMobs;
@@ -21,14 +21,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static deus.painscale.PainScaleMod.DYNAMIC_DIFFICULTY;
-import static deus.painscale.PainScaleMod.MP_NEARBY_PLAYER_AFFECTS;
+import static deus.painscale.PainScale.DYNAMIC_DIFFICULTY;
+import static deus.painscale.PainScale.MP_NEARBY_PLAYER_AFFECTS;
 
 @Mixin(value = SpawnerMobs.class, remap = false)
 public class SpawnerMobsMixin implements IPainScaleSpawnerMobs {
 
 	@Unique
-	private static final int NEARBY_PLAYER_RADIUS = PainScaleMod.CFG.getInt("Multiplayer.player_proximity_radius");
+	private static final int NEARBY_PLAYER_RADIUS = PainScale.CFG.getInt("Multiplayer.player_proximity_radius");
 
 	@Inject(
 		method = "performSpawning",
@@ -51,8 +51,8 @@ public class SpawnerMobsMixin implements IPainScaleSpawnerMobs {
 		if (mobToSpawn instanceof MobMonster) {
 			if (world.getGameRuleValue(MP_NEARBY_PLAYER_AFFECTS)) {
 				IPainScaleMobMonster mob = (IPainScaleMobMonster) mobToSpawn;
-				mob.ps$setAttackPowerMultiplier(Math.max(PainScaleMod.start_attack_multiplier, PainScaleMod.base_attack_multiplier_per_level * averagePlayerLevelNearby));
-				mob.ps$setHealthMultiplier(Math.max(PainScaleMod.start_health_multiplier, PainScaleMod.base_health_multiplier_per_level * averagePlayerLevelNearby));
+				mob.ps$setAttackPowerMultiplier(Math.max(PainScale.start_attack_multiplier, PainScale.base_attack_multiplier_per_level * averagePlayerLevelNearby));
+				mob.ps$setHealthMultiplier(Math.max(PainScale.start_health_multiplier, PainScale.base_health_multiplier_per_level * averagePlayerLevelNearby));
 				mob.ps$setDfLevel((int) averagePlayerLevelNearby);
 			}
 			// PainScaleMod.LOGGER.error(String.valueOf(mob.ps$getAttackPower()));

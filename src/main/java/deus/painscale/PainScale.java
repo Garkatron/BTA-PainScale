@@ -1,5 +1,6 @@
 package deus.painscale;
 
+import deus.painscale.api.IPainScaleSettings;
 import deus.painscale.command.PainScaleCommand;
 import deus.painscale.entity.mob_skeleton_armored.MobSkeletonArmored;
 import deus.painscale.entity.mob_zombie_armored.MobPainScaleZombieArmored;
@@ -28,9 +29,18 @@ import turniplabs.halplibe.util.RecipeEntrypoint;
 import turniplabs.halplibe.util.TomlConfigHandler;
 import turniplabs.halplibe.util.toml.Toml;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.time.Instant;
+import java.util.Date;
 
-public class PainScaleMod implements ModInitializer, RecipeEntrypoint, GameStartEntrypoint {
+
+public class PainScale implements ModInitializer, GameStartEntrypoint {
 	public static final String MOD_ID = "painscale";
+	public static final int CONFIG_VERSION = 0;
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 	public static TomlConfigHandler CFG;
 	private static final Toml TOML = new Toml("Customize your pain :)");
@@ -47,7 +57,20 @@ public class PainScaleMod implements ModInitializer, RecipeEntrypoint, GameStart
 	public static GameRuleBoolean MP_NEARBY_PLAYER_AFFECTS = null;
 	public static GameRuleBoolean DAY_SURVIVED_MESSAGE = null;
 
+	public static IPainScaleSettings OPTIONS;
+
+
 	static {
+
+		TOML.addCategory("Config")
+				.addEntry("version", CONFIG_VERSION);
+
+		/*
+		TOML.addCategory("GUI")
+			.addEntry("level_disappear_delay_milliseconds", 3000)
+			.addEntry("points_disappear_delay_milliseconds", 5000);
+		*/
+
 		TOML.addCategory("IDs")
 			.addEntry("item_id_olivine_heart", 25000);
 
@@ -93,10 +116,65 @@ public class PainScaleMod implements ModInitializer, RecipeEntrypoint, GameStart
 	@Override
 	public void onInitialize() {
 
-		base_attack_multiplier_per_level = PainScaleMod.CFG.getDouble("Enemies.base_attack_multiplier");
-		base_health_multiplier_per_level = PainScaleMod.CFG.getDouble("Enemies.base_attack_multiplier");
-		start_attack_multiplier = PainScaleMod.CFG.getDouble("Enemies.attack_multiplier_per_level");
-		start_health_multiplier = PainScaleMod.CFG.getDouble("Enemies.attack_multiplier_per_level");
+		try {
+			File file = PainScale.CFG.getConfigFile();
+
+			if (!file.exists()) {
+				LOGGER.info("Configuration file not found. Creating a new one...");
+				PainScale.CFG.create();
+			}
+
+			Integer versionObj = PainScale.CFG.getInt("Config.version");
+			int version = (versionObj != null) ? versionObj : -1;
+
+			if (CONFIG_VERSION != version) {
+				LOGGER.warn("The configuration version is outdated (found {}, expected {}). Recreating config.", version, CONFIG_VERSION);
+
+				Path source = file.toPath();
+
+				LOGGER.info("Reading config file: {}", source);
+				Path backupDir = source.getParent().resolve("painscale_bk");
+				try {
+					if (!Files.exists(backupDir)) {
+						Files.createDirectories(backupDir);
+						LOGGER.info("Created backup directory: {}", backupDir.toAbsolutePath());
+					}
+				} catch (IOException dirEx) {
+					LOGGER.error("Failed to create backup directory: ", dirEx);
+				}
+
+				String backupName = "backup_v" + version + "_" + Date.from(Instant.now()).getTime() + ".cfg";
+				Path backupPath = backupDir.resolve(backupName);
+
+				try {
+					Files.move(source, backupPath, StandardCopyOption.REPLACE_EXISTING);
+					LOGGER.warn("Old configuration backed up at: {}", backupPath.getFileName());
+				} catch (IOException moveEx) {
+					LOGGER.error("Failed to back up old configuration: ", moveEx);
+				}
+
+				try {
+					if (Files.exists(source)) {
+						Files.delete(source);
+						LOGGER.info("Deleted old configuration.");
+					}
+					PainScale.CFG.setDefaults(TOML);
+					PainScale.CFG.create();
+					LOGGER.info("New configuration created successfully with default values.");
+				} catch (IOException ex) {
+					LOGGER.error("Failed to create a fresh configuration file: ", ex);
+				}
+			}
+
+
+		} catch (Exception e) {
+			LOGGER.error("Error while initializing PainScale configuration: ", e);
+		}
+
+		base_attack_multiplier_per_level = PainScale.CFG.getDouble("Enemies.attack_multiplier_per_level");
+		base_health_multiplier_per_level = PainScale.CFG.getDouble("Enemies.health_multiplier_per_level");
+		start_attack_multiplier = PainScale.CFG.getDouble("Enemies.base_attack_multiplier");
+		start_health_multiplier = PainScale.CFG.getDouble("Enemies.base_health_multiplier");
 
 		PainScaleItems.init();
 		CommandManager.registerCommand(new PainScaleCommand());
@@ -105,36 +183,24 @@ public class PainScaleMod implements ModInitializer, RecipeEntrypoint, GameStart
 		EntityHelper.createEntity(MobPainScaleZombieArmored.class, NamespaceID.getPermanent(MOD_ID, "ps_zombie_armored"), "ps_zombie_armored");
 
 
-
 		LOGGER.info("PainScale initialized.");
 
 	}
 
-	@Override
-	public void onRecipesReady() {
-		RecipeBuilder.Shaped(MOD_ID).setShape("OOO", "OGO", "OOO").addInput('O', Items.OLIVINE).addInput('G', Items.FOOD_APPLE_GOLD).create("painscale:recipe/olivine_heart", PainScaleItems.OLIVINE_HEART.getDefaultStack());
-	}
 
-	@Override
-	public void initNamespaces() {
-		final RecipeGroup<RecipeEntryCrafting<?, ?>> painscale = new RecipeGroup<>(
-			new RecipeSymbol(new ItemStack(PainScaleItems.OLIVINE_HEART))
-		);
-
-
-		PSDF.register("painscale", painscale);
-
-		Registries.RECIPES.register(MOD_ID, PSDF);
-	}
 
 	public void beforeGameStart() {
 		try {
-			TextureRegistry.initializeAllFiles(MOD_ID, TextureRegistry.guiSpriteAtlas, true);
-			TextureRegistry.initializeAllFiles(MOD_ID, TextureRegistry.particleAtlas, true);
-		} catch (Exception var2) {
-			LOGGER.warn("PainScale: Failed to fully initialize assets, some issue may occur!", var2);
+			if (TextureRegistry.guiSpriteAtlas != null) {
+				TextureRegistry.initializeAllFiles(MOD_ID, TextureRegistry.guiSpriteAtlas, true);
+				TextureRegistry.initializeAllFiles(MOD_ID, TextureRegistry.particleAtlas, true);
+			}
+		} catch (Throwable t) {
+			LOGGER.warn("PainScale: Skipping early texture initialization (will load later)", t);
 		}
+
 	}
+
 
 	@Override
 	public void afterGameStart() {

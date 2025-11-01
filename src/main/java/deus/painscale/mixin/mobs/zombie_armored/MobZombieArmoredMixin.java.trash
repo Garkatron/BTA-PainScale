@@ -2,7 +2,7 @@ package deus.painscale.mixin.mobs.zombie_armored;
 
 import com.mojang.nbt.tags.CompoundTag;
 import com.mojang.nbt.tags.ListTag;
-import deus.painscale.PainScaleMod;
+import deus.painscale.PainScale;
 import deus.painscale.mechanics.ArmorSets;
 import deus.painscale.api.IPainScaleMobMonster;
 import deus.painscale.api.IPainScaleMobInventory;
@@ -23,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.ArrayList;
 import java.util.List;
 
-import static deus.painscale.PainScaleMod.ARMORED_ZOMBIES_PLUS;
+import static deus.painscale.PainScale.ARMORED_ZOMBIES_PLUS;
 
 @Mixin(value = MobZombieArmored.class, priority = 1001, remap = false)
 public class MobZombieArmoredMixin extends MobZombie implements IPainScaleMobInventory {

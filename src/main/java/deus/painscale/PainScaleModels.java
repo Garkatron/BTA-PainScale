@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import turniplabs.halplibe.helper.ModelHelper;
 import turniplabs.halplibe.util.ModelEntrypoint;
 
-import static deus.painscale.PainScaleMod.MOD_ID;
+import static deus.painscale.PainScale.MOD_ID;
 
 public class PainScaleModels implements ModelEntrypoint {
 	@Override

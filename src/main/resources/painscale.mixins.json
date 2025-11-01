@@ -12,9 +12,11 @@
     "player.PlayerMixin"
   ],
   "client": [
+    "GameSettingsMixin",
     "HudComponentHealthBarMixin",
     "IAEntityDispatcher",
-    "MinecraftMixin"
+    "MinecraftMixin",
+    "OptionsPagesMixin"
   ],
   "injectors": {
     "defaultRequire": 1

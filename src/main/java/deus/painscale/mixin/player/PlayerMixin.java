@@ -2,7 +2,7 @@ package deus.painscale.mixin.player;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.mojang.nbt.tags.CompoundTag;
-import deus.painscale.PainScaleMod;
+import deus.painscale.PainScale;
 import deus.painscale.api.IPainScalePlayer;
 import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.Mob;
@@ -10,7 +10,6 @@ import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -18,13 +17,13 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static deus.painscale.PainScaleMod.DAY_SURVIVED_MESSAGE;
-import static deus.painscale.PainScaleMod.MORE_HEARTS;
+import static deus.painscale.PainScale.DAY_SURVIVED_MESSAGE;
+import static deus.painscale.PainScale.MORE_HEARTS;
 
 @Mixin(value = Player.class, remap = false)
 public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 
-	@Unique protected int dfLevel = PainScaleMod.CFG.getInt("Levels.minimum_level");
+	@Unique protected int dfLevel = PainScale.CFG.getInt("Levels.minimum_level");
 	@Unique protected int dfPoints = 0;
 	@Unique protected int dfPointsToGrow = 10;
 	@Unique protected double dfPointsToGrowMultiplier = 0;
@@ -52,7 +51,7 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 
 	@Inject(method = "addAdditionalSaveData", at = @At("TAIL"), remap = false)
 	public void modifiedAddAdditionalSaveData(CompoundTag tag, CallbackInfo ci) {
-		tag.putInt("PsDfLevel", Math.max(PainScaleMod.CFG.getInt("Levels.minimum_level"), dfLevel));
+		tag.putInt("PsDfLevel", Math.max(PainScale.CFG.getInt("Levels.minimum_level"), dfLevel));
 		tag.putInt("PsDfPoints", dfPoints);
 		tag.putInt("PsDfPointsRemaining", dfPointsToGrow);
 		tag.putDouble("PsDfPointsToGrowMultiplier", dfPointsToGrowMultiplier);
@@ -62,7 +61,7 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 
 	@Inject(method = "readAdditionalSaveData", at = @At("TAIL"), remap = false)
 	public void modifiedReadAdditionalSaveData(CompoundTag tag, CallbackInfo ci) {
-		dfLevel = Math.max(PainScaleMod.CFG.getInt("Levels.minimum_level"), tag.getInteger("PsDfLevel"));
+		dfLevel = Math.max(PainScale.CFG.getInt("Levels.minimum_level"), tag.getInteger("PsDfLevel"));
 		dfPoints = tag.getInteger("PsDfPoints");
 		maxHealth = Math.max(tag.getInteger("PsDfMaxHealth"), 20);
 		dfPointsToGrow = tag.getInteger("PsDfPointsRemaining");
@@ -93,13 +92,13 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 			int remainingToLevelUp = dfPointsToGrow;
 
 			if (amount >= remainingToLevelUp) {
-				dfLevel = Math.min(dfLevel + 1, PainScaleMod.CFG.getInt("Levels.maximum_level"));
+				dfLevel = Math.min(dfLevel + 1, PainScale.CFG.getInt("Levels.maximum_level"));
 				amount -= remainingToLevelUp;
 
 				dfPoints = 0;
-				dfPointsToGrowMultiplier += PainScaleMod.CFG.getDouble("Levels.points_per_level_multiplier");
+				dfPointsToGrowMultiplier += PainScale.CFG.getDouble("Levels.points_per_level_multiplier");
 				dfPointsToGrow = (int) Math.round(
-					PainScaleMod.CFG.getInt("Levels.min_points_to_level_up") * dfPointsToGrowMultiplier
+					PainScale.CFG.getInt("Levels.min_points_to_level_up") * dfPointsToGrowMultiplier
 				);
 			} else {
 				dfPointsToGrow -= amount;
@@ -118,7 +117,7 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 			} else if (currentDayCount != dayCountLastTick) {
 				dayCountLastTick = currentDayCount;
 				survivedDayCount++;
-				int points = PainScaleMod.CFG.getInt("Points.points_per_day_survived_per_level") * dfLevel;
+				int points = PainScale.CFG.getInt("Points.points_per_day_survived_per_level") * dfLevel;
 				ps$addPoints(points);
 				if (world.getGameRuleValue(DAY_SURVIVED_MESSAGE)) {
 					sendMessage("You have survived " + survivedDayCount + " days!");
@@ -131,7 +130,7 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 
 	@Inject(method = "attackTargetEntityWithCurrentItem", at = @At("TAIL"), remap = false)
 	public void addPointsOnAttackTargetEntityWithCurrentItem(Entity entity, CallbackInfo ci) {
-		ps$addPoints(PainScaleMod.CFG.getInt("Points.points_gained_per_monster_hit"));
+		ps$addPoints(PainScale.CFG.getInt("Points.points_gained_per_monster_hit"));
 	}
 
 	@Inject(method = "onDeath", at = @At("TAIL"), remap = false)
@@ -154,7 +153,7 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 			dfPointsToGrow += spent;
 
 			// Asegurarse de no bajar del nivel mínimo
-			int minLevel = PainScaleMod.CFG.getInt("Levels.minimum_level");
+			int minLevel = PainScale.CFG.getInt("Levels.minimum_level");
 			if (dfLevel > minLevel) {
 				dfLevel--;
 			}
@@ -171,7 +170,7 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 
 	@Override
 	public void ps$subLevels(int amount) {
-		int minLevel = PainScaleMod.CFG.getInt("Levels.minimum_level");
+		int minLevel = PainScale.CFG.getInt("Levels.minimum_level");
 		for (int i = 0; i < amount; i++) {
 			if (dfLevel > minLevel) {
 				dfLevel--;
@@ -185,18 +184,18 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 
 	@Override
 	public void ps$resetMultiplier() {
-		dfPointsToGrowMultiplier = PainScaleMod.CFG.getDouble("Levels.points_per_level_multiplier");
+		dfPointsToGrowMultiplier = PainScale.CFG.getDouble("Levels.points_per_level_multiplier");
 	}
 
 	@Override
 	public void ps$resetPoints() {
-		dfPointsToGrow = (int) Math.round(PainScaleMod.CFG.getDouble("Levels.points_per_level_multiplier") * dfPointsToGrowMultiplier);
+		dfPointsToGrow = (int) Math.round(PainScale.CFG.getDouble("Levels.points_per_level_multiplier") * dfPointsToGrowMultiplier);
 		dfPoints = 0;
 	}
 
 	@Override
 	public void ps$resetLevels() {
-		dfLevel = Math.min(dfLevel + 1, PainScaleMod.CFG.getInt("Levels.minimum_level"));
+		dfLevel = Math.min(dfLevel + 1, PainScale.CFG.getInt("Levels.minimum_level"));
 		ps$resetPoints();
 	}
 
