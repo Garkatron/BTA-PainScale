@@ -3,6 +3,7 @@ package deus.painscale;
 import deus.painscale.command.PainScaleCommand;
 import deus.painscale.entity.mob_skeleton_armored.MobSkeletonArmored;
 import deus.painscale.entity.mob_zombie_armored.MobPainScaleZombieArmored;
+import deus.painscale.gui.HudManager;
 import deus.painscale.item.PainScaleItems;
 import deus.painscale.mechanics.ArmorSets;
 import net.fabricmc.api.ModInitializer;
@@ -73,7 +74,7 @@ public class PainScaleMod implements ModInitializer, RecipeEntrypoint, GameStart
 		TOML.addCategory("Points")
 			.addEntry("base_points_per_monster", 10) // Base points awarded per monster killed
 			.addEntry("points_per_level_multiplier_per_monster", 10.0)
-			.addEntry("level_cost_points_multiplier", 50.0) // Multiplier for point cost per level
+			.addEntry("level_cost_points_multiplier", 25.0) // Multiplier for point cost per level
 			.addEntry("points_gained_per_monster_hit", 1) // Points gained per hit on a monster
 			.addEntry("points_per_day_survived_per_level", 20) // Points gained per day survived * current level
 			.addEntry("points_lost_on_death_per_level", 20) // Points lost on death * current level
@@ -138,5 +139,6 @@ public class PainScaleMod implements ModInitializer, RecipeEntrypoint, GameStart
 	@Override
 	public void afterGameStart() {
 		ArmorSets.initialize();
+		new HudManager().onInitialize();
 	}
 }

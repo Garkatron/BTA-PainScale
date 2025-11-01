@@ -96,6 +96,7 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 				dfLevel = Math.min(dfLevel + 1, PainScaleMod.CFG.getInt("Levels.maximum_level"));
 				amount -= remainingToLevelUp;
 
+				dfPoints = 0;
 				dfPointsToGrowMultiplier += PainScaleMod.CFG.getDouble("Levels.points_per_level_multiplier");
 				dfPointsToGrow = (int) Math.round(
 					PainScaleMod.CFG.getInt("Levels.min_points_to_level_up") * dfPointsToGrowMultiplier
