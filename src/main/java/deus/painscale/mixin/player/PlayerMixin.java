@@ -72,7 +72,6 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 		method = "getMaxHealth", at = @At("RETURN"), remap = false)
 	private int modifyGetMaxHealth(int original) {
 		if (isCatalystPresent()) {
-			LOGGER.warn("Don't use setMaxHealth if catalyst-effects is present!.");
 			return original;
 		}
 		if (world.getGameRuleValue(MORE_HEARTS)) {

@@ -9,6 +9,6 @@ public class PainScaleItems {
 	private static final ItemBuilder itemBuilder = new ItemBuilder(PainScale.MOD_ID);
 
 	public static void init() {
-		OLIVINE_HEART = itemBuilder.build(new ItemOlivineHeart("olivine_heart", "painscale:item/olivine_heart", PainScale.CFG.getInt("IDs.item_id_olivine_heart"), 20, 1, false,1));
+		OLIVINE_HEART = itemBuilder.build(new ItemOlivineHeart("olivine_heart", "painscale:item/olivine_heart", PainScale.CFG.getInt("IDs.item_id_olivine_heart")));
 	}
 }
