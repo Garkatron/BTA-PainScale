@@ -109,6 +109,7 @@ public class MobContainerInventory implements Container {
 	}
 
 	public ItemStack armorItemInSlot(int i) {
+		if (i<0) return this.armorInventory[0];
 		return this.armorInventory[i];
 	}
 

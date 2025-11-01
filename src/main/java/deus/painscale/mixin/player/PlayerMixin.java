@@ -17,8 +17,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static deus.painscale.PainScale.DAY_SURVIVED_MESSAGE;
-import static deus.painscale.PainScale.MORE_HEARTS;
+import static deus.painscale.PainScale.*;
 
 @Mixin(value = Player.class, remap = false)
 public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
@@ -29,7 +28,7 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 	@Unique protected double dfPointsToGrowMultiplier = 0;
 	@Unique int survivedDayCount = 0;
 	@Unique boolean isFirstTick = true;
-	@Unique private int maxHealth = 20;
+	@Unique private int maxHealth = 20; // ! Unused if catalyst-effects is present!.
 	@Unique int dayCountLastTick = -1; // Initialize to -1 to ensure first day is detected
 	@Unique private boolean killedBy = false;
 
@@ -72,6 +71,10 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 	@ModifyReturnValue(
 		method = "getMaxHealth", at = @At("RETURN"), remap = false)
 	private int modifyGetMaxHealth(int original) {
+		if (isCatalystPresent()) {
+			LOGGER.warn("Don't use setMaxHealth if catalyst-effects is present!.");
+			return original;
+		}
 		if (world.getGameRuleValue(MORE_HEARTS)) {
 			return Math.max(maxHealth, 20);
 		} else {
@@ -231,6 +234,10 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 
 	@Override
 	public void ps$setMaxHealth(int value) {
+		if (isCatalystPresent()) {
+			LOGGER.warn("Don't use setMaxHealth if catalyst-effects is present!.");
+			return;
+		}
 		if (world.getGameRuleValue(MORE_HEARTS)) {
 			this.maxHealth = Math.max(value, 20);
 			setHealthRaw(Math.max(value, 20));

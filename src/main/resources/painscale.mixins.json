@@ -3,6 +3,8 @@
   "minVersion": "0.8",
   "package": "deus.painscale.mixin",
   "compatibilityLevel": "JAVA_8",
+  "plugin": "deus.painscale.mixin.plugin.AetherMixinConfigPlugin",
+
   "mixins": [
     "BiomeMixin",
     "MobMixin",

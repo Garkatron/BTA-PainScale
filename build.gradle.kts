@@ -22,6 +22,8 @@ val mod_version: String by project
 
 val bta_channel: String by project
 val bta_version: String by project
+val catalystcore_version: String by project
+val catalysteffects_version: String by project
 
 val loader_version: String by project
 
@@ -56,6 +58,7 @@ repositories {
         name = "SignalumMavenReleases"
         url = uri("https://maven.thesignalumproject.net/releases")
     }
+
     ivy {
         url = uri("https://github.com/Better-than-Adventure")
         patternLayout {
@@ -84,6 +87,7 @@ repositories {
         }
         metadataSources { artifact() }
     }
+
 }
 
 dependencies {
@@ -92,6 +96,9 @@ dependencies {
 
     modRuntimeOnly("objects:client:43db9b498cb67058d2e12d394e6507722e71bb45") // https://piston-data.mojang.com/v1/objects/43db9b498cb67058d2e12d394e6507722e71bb45/client.jar
     modImplementation("net.fabricmc:fabric-loader:$loader_version")
+
+	compileOnly("sunsetsatellite:catalyst-core:${catalystcore_version}")
+	compileOnly("sunsetsatellite:catalyst-effects:${catalysteffects_version}")
 
     // Helper library
     // If you do not need Halplibe you can comment this line out or delete this line
@@ -128,6 +135,7 @@ dependencies {
     implementation("org.lwjgl:lwjgl-openal:$lwjglVersion")
     implementation("org.lwjgl:lwjgl-opengl:$lwjglVersion")
     implementation("org.lwjgl:lwjgl-stb:$lwjglVersion")
+
 }
 
 java {

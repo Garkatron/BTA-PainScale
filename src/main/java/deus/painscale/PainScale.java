@@ -8,24 +8,17 @@ import deus.painscale.gui.HudManager;
 import deus.painscale.item.PainScaleItems;
 import deus.painscale.mechanics.ArmorSets;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.render.texture.stitcher.TextureRegistry;
 import net.minecraft.core.data.gamerule.GameRuleBoolean;
 import net.minecraft.core.data.gamerule.GameRules;
-import net.minecraft.core.data.registry.Registries;
-import net.minecraft.core.data.registry.recipe.RecipeGroup;
 import net.minecraft.core.data.registry.recipe.RecipeNamespace;
-import net.minecraft.core.data.registry.recipe.RecipeSymbol;
-import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
-import net.minecraft.core.item.ItemStack;
-import net.minecraft.core.item.Items;
 import net.minecraft.core.net.command.CommandManager;
 import net.minecraft.core.util.collection.NamespaceID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import turniplabs.halplibe.helper.EntityHelper;
-import turniplabs.halplibe.helper.RecipeBuilder;
 import turniplabs.halplibe.util.GameStartEntrypoint;
-import turniplabs.halplibe.util.RecipeEntrypoint;
 import turniplabs.halplibe.util.TomlConfigHandler;
 import turniplabs.halplibe.util.toml.Toml;
 
@@ -45,7 +38,7 @@ public class PainScale implements ModInitializer, GameStartEntrypoint {
 	public static TomlConfigHandler CFG;
 	private static final Toml TOML = new Toml("Customize your pain :)");
 	public static final RecipeNamespace PSDF = new RecipeNamespace();
-
+	private static boolean FlagIsCatalystPresent = false;
 	public static double base_attack_multiplier_per_level = 0.0;
 	public static double base_health_multiplier_per_level = 0.0;
 	public static double start_attack_multiplier = 0.0;
@@ -59,6 +52,14 @@ public class PainScale implements ModInitializer, GameStartEntrypoint {
 
 	public static IPainScaleSettings OPTIONS;
 
+	public static boolean isCatalystPresent() {
+		return FlagIsCatalystPresent;
+	}
+
+	public static void setIsCatalystPresent(boolean b) {
+		if (FlagIsCatalystPresent && !b) return;
+		FlagIsCatalystPresent = b;
+	}
 
 	static {
 
@@ -175,6 +176,10 @@ public class PainScale implements ModInitializer, GameStartEntrypoint {
 		base_health_multiplier_per_level = PainScale.CFG.getDouble("Enemies.health_multiplier_per_level");
 		start_attack_multiplier = PainScale.CFG.getDouble("Enemies.base_attack_multiplier");
 		start_health_multiplier = PainScale.CFG.getDouble("Enemies.base_health_multiplier");
+
+		setIsCatalystPresent(FabricLoader.getInstance().isModLoaded("catalyst-effects"));
+
+		if (isCatalystPresent()) LOGGER.warn("Catalyst effects is present.");
 
 		PainScaleItems.init();
 		CommandManager.registerCommand(new PainScaleCommand());
