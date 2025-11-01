@@ -76,7 +76,7 @@ public class PainScale implements ModInitializer, GameStartEntrypoint {
 
 		TOML.addCategory("Levels")
 			.addEntry("min_points_to_level_up", 10) // Minimum points required to level up
-			.addEntry("points_per_level_multiplier", 50.0) // Points multiplier per level
+			.addEntry("points_per_level_multiplier", 20.0) // Points multiplier per level
 			.addEntry("minimum_level", 1) // Minimum allowed level
 			.addEntry("maximum_level", 100); // Maximum allowed level
 
@@ -96,8 +96,8 @@ public class PainScale implements ModInitializer, GameStartEntrypoint {
 
 		TOML.addCategory("Points")
 			.addEntry("base_points_per_monster", 10) // Base points awarded per monster killed
-			.addEntry("points_per_level_multiplier_per_monster", 10.0)
-			.addEntry("level_cost_points_multiplier", 25.0) // Multiplier for point cost per level
+			.addEntry("points_per_level_multiplier_per_monster", 3.0)
+			.addEntry("level_cost_points_multiplier", 25.0) // Multiplier for point cost per level on death
 			.addEntry("points_gained_per_monster_hit", 1) // Points gained per hit on a monster
 			.addEntry("points_per_day_survived_per_level", 20) // Points gained per day survived * current level
 			.addEntry("points_lost_on_death_per_level", 20) // Points lost on death * current level
