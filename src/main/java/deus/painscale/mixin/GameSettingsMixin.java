@@ -19,6 +19,8 @@ public class GameSettingsMixin implements IPainScaleSettings
 
 	@Unique public final OptionRange ms_delay_level = new OptionRange(mixinInst, "painscale.msDelayLevel", 5000, 0, 9999);
 	@Unique public final OptionRange ms_delay_points = new OptionRange(mixinInst, "painscale.msDelayPoints", 6000, 0, 9999);
+	@Unique public final OptionBoolean show_points = new OptionBoolean(mixinInst, "painscale.showPoints", true);
+	@Unique public final OptionBoolean show_level = new OptionBoolean(mixinInst, "painscale.showLevel", true);
 
 
 	@Inject(method = "<init>", at=@At("TAIL"),remap = false)
@@ -34,5 +36,15 @@ public class GameSettingsMixin implements IPainScaleSettings
 	@Override
 	public OptionRange get_ms_delay_level() {
 		return ms_delay_level;
+	}
+
+	@Override
+	public OptionBoolean get_show_level() {
+		return show_level;
+	}
+
+	@Override
+	public OptionBoolean get_show_points() {
+		return show_points;
 	}
 }

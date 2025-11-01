@@ -29,7 +29,7 @@ public class DifficultyMeter extends HudComponentMovable {
 
 	@Override
 	public boolean isVisible(Minecraft mc) {
-		return mc.thePlayer != null;
+		return PainScale.OPTIONS.get_show_level().value && mc.thePlayer != null;
 	}
 
 

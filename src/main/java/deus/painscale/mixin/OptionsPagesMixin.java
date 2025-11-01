@@ -3,6 +3,7 @@ package deus.painscale.mixin;
 import deus.painscale.api.IPainScaleSettings;
 import deus.painscale.item.PainScaleItems;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.options.components.BooleanOptionComponent;
 import net.minecraft.client.gui.options.components.IntegerOptionComponent;
 import net.minecraft.client.gui.options.components.ToggleableOptionComponent;
 import net.minecraft.client.gui.options.data.OptionsPage;
@@ -35,6 +36,11 @@ public class OptionsPagesMixin {
 			new ToggleableOptionComponent<>(((IPainScaleSettings)settings).get_ms_delay_level()));
 		painScalePage.withComponent(
 			new ToggleableOptionComponent<>(((IPainScaleSettings)settings).get_ms_delay_points()));
+
+		painScalePage.withComponent(
+			new BooleanOptionComponent(((IPainScaleSettings)settings).get_show_level()));
+		painScalePage.withComponent(
+			new BooleanOptionComponent(((IPainScaleSettings)settings).get_show_points()));
 	}
 
 }

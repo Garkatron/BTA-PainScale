@@ -27,7 +27,7 @@ public class PointsMeter extends HudComponentMovable {
 
 	@Override
 	public boolean isVisible(Minecraft mc) {
-		return mc.thePlayer != null;
+		return PainScale.OPTIONS.get_show_points().value && mc.thePlayer != null;
 	}
 	@Override
 	public void render(Minecraft mc, HudIngame gui, int xSizeScreen, int ySizeScreen, float partialTick) {
@@ -42,7 +42,6 @@ public class PointsMeter extends HudComponentMovable {
 		int currentPoints = player.ps$getDifficultyPoints();
 		int remainingPoints = player.ps$getRemainingPoints();
 
-		// calcular porcentaje de progreso
 		float percentage = currentPoints / (float)(currentPoints + remainingPoints);
 
 		if (currentPoints != lastRemainingPoints) {

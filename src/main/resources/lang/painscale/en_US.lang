@@ -6,3 +6,5 @@ item.painscale.olivine_heart.name = Olivine Heart
 item.painscale.olivine_heart.desc = A mystical gem that grants you a brand new heart!
 options.painscale.msDelayPoints = Time before points fade (ms)
 options.painscale.msDelayLevel = Time before level fades (ms)
+options.painscale.showPoints = Show points
+options.painscale.showLevel = Show level

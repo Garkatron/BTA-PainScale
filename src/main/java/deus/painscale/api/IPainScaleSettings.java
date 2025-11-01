@@ -9,4 +9,6 @@ public interface IPainScaleSettings
 {
 	OptionRange get_ms_delay_points();
 	OptionRange get_ms_delay_level();
+	OptionBoolean get_show_level();
+	OptionBoolean get_show_points();
 }
