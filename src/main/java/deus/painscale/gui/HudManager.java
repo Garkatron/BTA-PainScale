@@ -11,10 +11,9 @@ public class HudManager
 	public void onInitialize()
 	{
 		DifficultyMeter DIFFICULTY_METER = new DifficultyMeter("difficultymeter", 26, 16, new LayoutSnap(HudComponents.HOTBAR, ComponentAnchor.CENTER_RIGHT, ComponentAnchor.CENTER_LEFT));
-		PointsMeter POINTS_METER = new PointsMeter("pointsmetter", 26, 16, new LayoutSnap(DIFFICULTY_METER, ComponentAnchor.CENTER_RIGHT, ComponentAnchor.CENTER_LEFT));
 
 		HudComponents.register(DIFFICULTY_METER);
-		HudComponents.register(POINTS_METER);
+
 
 
 		/*
