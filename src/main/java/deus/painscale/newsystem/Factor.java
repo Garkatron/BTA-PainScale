@@ -23,7 +23,7 @@ public class Factor {
 	public void addDependency(Factor factor) {
 		dependencies.add(factor);
 		if (autoRecalculate) {
-			Signal<Factor> signal = factor.getEvent("changed");
+			Signal<Level> signal = factor.getEvent("changed");
 			if (signal != null) {
 				signal.connect((s, f) -> recalculate());
 			}
@@ -33,7 +33,7 @@ public class Factor {
 	public void addPoints(int amount) {
 		if (isComposite()) return;
 		level.addPoints(amount);
-		emit("changed", this);
+		emit("changed", level);
 	}
 
 
@@ -52,7 +52,7 @@ public class Factor {
 		int newPoints = (int) (avg * level.getMaxPoints() / 100.0);
 		int delta = newPoints - level.getPoints();
 		level.addPoints(delta);
-		emit("changed", this);
+		emit("changed", level);
 	}
 
 	public <T> void registerEvent(String id, Signal<T> signal) {

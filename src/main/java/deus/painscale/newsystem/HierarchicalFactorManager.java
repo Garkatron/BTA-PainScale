@@ -41,6 +41,12 @@ public class HierarchicalFactorManager {
 		factors.values().forEach(Factor::recalculate);
 	}
 
+	public Factor createFactor(String id, int maxLevel, int level, int maxPoints, int points) {
+		Factor factor = new Factor(id, new Level(maxLevel, level, maxPoints, points));
+		this.register(factor);
+		return factor;
+	}
+
 
 
 }

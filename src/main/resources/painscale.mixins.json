@@ -4,11 +4,11 @@
   "package": "deus.painscale.mixin",
   "compatibilityLevel": "JAVA_8",
   "plugin": "deus.painscale.mixin.plugin.AetherMixinConfigPlugin",
-
   "mixins": [
     "BiomeMixin",
     "MobMixin",
     "SpawnerMobsMixin",
+    "WorldMixin",
     "mobs.mob.MobMixin",
     "mobs.mob_monster.MobMonsterMixin",
     "player.PlayerMixin"
