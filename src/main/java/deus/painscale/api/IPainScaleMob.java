@@ -1,5 +1,7 @@
 package deus.painscale.api;
 
+import deus.painscale.newsystem.Level;
+
 public interface IPainScaleMob {
-	double ps$getPointsMultiplier();
+	Level ps$getLevel();
 }

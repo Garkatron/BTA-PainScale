@@ -41,12 +41,12 @@ public class MobMonsterMixin extends MobPathfinder implements IPainScaleMobMonst
 	@Override
 	public void onDeath(Entity entityKilledBy) {
 		super.onDeath(entityKilledBy);
-		if (entityKilledBy instanceof Player player) {
+		/*if (entityKilledBy instanceof Player player) {
 			IPainScalePlayer p = (IPainScalePlayer) player;
 			IPainScaleMob mob = (IPainScaleMob) (Object) this;
 			int points = (int) Math.max(PainScale.CFG.getInt("Points.base_points_per_monster"), mob.ps$getPointsMultiplier() * dfLevel);
 			p.ps$addPoints(points);
-		}
+		}*/
 	}
 
 	@Override

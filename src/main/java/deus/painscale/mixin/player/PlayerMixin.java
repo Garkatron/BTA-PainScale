@@ -4,6 +4,10 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.mojang.nbt.tags.CompoundTag;
 import deus.painscale.PainScale;
 import deus.painscale.api.IPainScalePlayer;
+import deus.painscale.newsystem.DifficultySystem;
+import deus.painscale.newsystem.Factor;
+import deus.painscale.newsystem.HierarchicalFactorManager;
+import deus.painscale.newsystem.Level;
 import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.Mob;
 import net.minecraft.core.entity.player.Player;
@@ -22,15 +26,16 @@ import static deus.painscale.PainScale.*;
 @Mixin(value = Player.class, remap = false)
 public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 
-	@Unique protected int dfLevel = PainScale.CFG.getInt("Levels.minimum_level");
-	@Unique protected int dfPoints = 0;
-	@Unique protected int dfPointsToGrow = 10;
-	@Unique protected double dfPointsToGrowMultiplier = 0;
+
 	@Unique int survivedDayCount = 0;
 	@Unique boolean isFirstTick = true;
 	@Unique private int maxHealth = 20; // ! Unused if catalyst-effects is present!.
 	@Unique int dayCountLastTick = -1; // Initialize to -1 to ensure first day is detected
 	@Unique private boolean killedBy = false;
+
+	@Unique private HierarchicalFactorManager playerManager;
+	@Unique private Factor melee;
+	@Unique private Factor distance;
 
 	@Shadow(remap = false) public abstract void readAdditionalSaveData(@NotNull CompoundTag tag);
 	@Shadow public abstract void addAdditionalSaveData(@NotNull CompoundTag tag);
@@ -40,32 +45,60 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 		super(world);
 	}
 
-	@Override public int ps$getDifficultyLevel() {
-		return dfLevel;
-	}
 
-	@Override public int ps$getDifficultyPoints() {
-		return dfPoints;
+	@Inject(method = "<init>", at = @At("TAIL"), remap = false)
+	public void init(World world, CallbackInfo ci) {
+		playerManager = new HierarchicalFactorManager(DifficultySystem.worldManager);
+
+		melee = new Factor("player.melee", new Level(100, 1, 100, 0));
+		distance = new Factor("player.distance", new Level(100, 1, 100, 0));
+
+		playerManager.register(melee);
+		playerManager.register(distance);
+
+		Factor attakFactor = new Factor("player.attakFactor", new Level(100, 1, 100, 0));
+		attakFactor.addDependency(melee);
+		attakFactor.addDependency(distance);
+
+		if (DifficultySystem.worldDifficulty != null) {
+			DifficultySystem.worldDifficulty.addDependency(attakFactor);
+		}
+
+		playerManager.register(attakFactor);
 	}
 
 	@Inject(method = "addAdditionalSaveData", at = @At("TAIL"), remap = false)
 	public void modifiedAddAdditionalSaveData(CompoundTag tag, CallbackInfo ci) {
-		tag.putInt("PsDfLevel", Math.max(PainScale.CFG.getInt("Levels.minimum_level"), dfLevel));
-		tag.putInt("PsDfPoints", dfPoints);
-		tag.putInt("PsDfPointsRemaining", dfPointsToGrow);
-		tag.putDouble("PsDfPointsToGrowMultiplier", dfPointsToGrowMultiplier);
 		tag.putInt("PsDfMaxHealth", Math.max(maxHealth, 20));
 		tag.putInt("PsDfSurvivedDayCount", survivedDayCount);
+
+		CompoundTag meleeTag = new CompoundTag();
+		meleeTag.putCompound("melee", melee.getLevel().toTag());
+		tag.put("FactorMelee", meleeTag);
+
+		CompoundTag distanceTag = new CompoundTag();
+		distanceTag.putCompound("distance", distance.getLevel().toTag());
+		tag.put("FactorDistance", distanceTag);
+
 	}
+
 
 	@Inject(method = "readAdditionalSaveData", at = @At("TAIL"), remap = false)
 	public void modifiedReadAdditionalSaveData(CompoundTag tag, CallbackInfo ci) {
-		dfLevel = Math.max(PainScale.CFG.getInt("Levels.minimum_level"), tag.getInteger("PsDfLevel"));
-		dfPoints = tag.getInteger("PsDfPoints");
 		maxHealth = Math.max(tag.getInteger("PsDfMaxHealth"), 20);
-		dfPointsToGrow = tag.getInteger("PsDfPointsRemaining");
-		dfPointsToGrowMultiplier = tag.getDouble("PsDfPointsToGrowMultiplier");
 		survivedDayCount = tag.getInteger("PsDfSurvivedDayCount");
+
+		if (tag.containsKey("FactorMelee")) {
+			CompoundTag meleeTag = tag.getCompound("FactorMelee");
+			melee.getLevel().loadFromCompound(meleeTag.getCompound("melee"));
+		}
+
+		if (tag.containsKey("FactorDistance")) {
+			CompoundTag distanceTag = tag.getCompound("FactorDistance");
+			distance.getLevel().loadFromCompound(distanceTag.getCompound("distance"));
+		}
+
+
 	}
 
 	@ModifyReturnValue(
@@ -86,53 +119,43 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 		return killedBy;
 	}
 
-	// Linear scaling | Level * Multiplier = Result
 	@Override
-	public void ps$addPoints(int amount) {
-		while (amount > 0) {
-			dfPoints += amount;
-			int remainingToLevelUp = dfPointsToGrow;
-
-			if (amount >= remainingToLevelUp) {
-				dfLevel = Math.min(dfLevel + 1, PainScale.CFG.getInt("Levels.maximum_level"));
-				amount -= remainingToLevelUp;
-
-				dfPoints = 0;
-				dfPointsToGrowMultiplier += PainScale.CFG.getDouble("Levels.points_per_level_multiplier");
-				dfPointsToGrow = (int) Math.round(
-					PainScale.CFG.getInt("Levels.min_points_to_level_up") * dfPointsToGrowMultiplier
-				);
-			} else {
-				dfPointsToGrow -= amount;
-				amount = 0;
-			}
-		}
+	public void ps$addDistanceAttackPoints(int amount) {
+		playerManager.get("player.distance").addPoints(amount);
 	}
 
-	@Inject(method = "tick", at = @At("TAIL"), remap = false)
-	public void postTick(CallbackInfo ci) {
-		if (world != null) {
-			int currentDayCount = (int) (world.getLevelData().getWorldTime() / 24000L);
-			if (isFirstTick) {
-				dayCountLastTick = currentDayCount; // Set to current day on first tick
-				isFirstTick = false;
-			} else if (currentDayCount != dayCountLastTick) {
-				dayCountLastTick = currentDayCount;
-				survivedDayCount++;
-				int points = PainScale.CFG.getInt("Points.points_per_day_survived_per_level") * dfLevel;
-				ps$addPoints(points);
-				if (world.getGameRuleValue(DAY_SURVIVED_MESSAGE)) {
-					sendMessage("You have survived " + survivedDayCount + " days!");
-					sendMessage("You have earned " + points + " points!");
+	@Override
+	public void ps$addMeleePoints(int amount) {
+		melee.addPoints(10);
+		System.out.println(melee.toString());
+
+	}
+
+	/*
+			@Inject(method = "tick", at = @At("TAIL"), remap = false)
+			public void postTick(CallbackInfo ci) {
+				if (world != null) {
+					int currentDayCount = (int) (world.getLevelData().getWorldTime() / 24000L);
+					if (isFirstTick) {
+						dayCountLastTick = currentDayCount;
+						isFirstTick = false;
+					} else if (currentDayCount != dayCountLastTick) {
+						dayCountLastTick = currentDayCount;
+						survivedDayCount++;
+						int points = 10;
+						if (world.getGameRuleValue(DAY_SURVIVED_MESSAGE)) {
+							sendMessage("You have survived " + survivedDayCount + " days!");
+							sendMessage("You have earned " + points + " points!");
+						}
+
+					}
 				}
-
 			}
-		}
-	}
-
+		*/
 	@Inject(method = "attackTargetEntityWithCurrentItem", at = @At("TAIL"), remap = false)
 	public void addPointsOnAttackTargetEntityWithCurrentItem(Entity entity, CallbackInfo ci) {
-		ps$addPoints(PainScale.CFG.getInt("Points.points_gained_per_monster_hit"));
+		ps$addMeleePoints(10);
+
 	}
 
 	@Inject(method = "onDeath", at = @At("TAIL"), remap = false)
@@ -142,94 +165,8 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 		}
 	}
 
-	@Override
-	public void ps$subPoints(int amount) {
-		if (amount <= 0) return;
-
-		if (dfPoints >= amount) {
-			dfPoints -= amount;
-			dfPointsToGrow += amount;
-		} else {
-			int spent = dfPoints;
-			dfPoints = 0;
-			dfPointsToGrow += spent;
-
-			// Asegurarse de no bajar del nivel mínimo
-			int minLevel = PainScale.CFG.getInt("Levels.minimum_level");
-			if (dfLevel > minLevel) {
-				dfLevel--;
-			}
-		}
-	}
 
 
-	@Override
-	public void ps$addLevels(int amount) {
-		for (int i = 0; i < amount; i++) {
-			ps$addPoints(dfPointsToGrow);
-		}
-	}
-
-	@Override
-	public void ps$subLevels(int amount) {
-		int minLevel = PainScale.CFG.getInt("Levels.minimum_level");
-		for (int i = 0; i < amount; i++) {
-			if (dfLevel > minLevel) {
-				dfLevel--;
-
-			} else {
-				break;
-			}
-		}
-	}
-
-
-	@Override
-	public void ps$resetMultiplier() {
-		dfPointsToGrowMultiplier = PainScale.CFG.getDouble("Levels.points_per_level_multiplier");
-	}
-
-	@Override
-	public void ps$resetPoints() {
-		dfPointsToGrow = (int) Math.round(PainScale.CFG.getDouble("Levels.points_per_level_multiplier") * dfPointsToGrowMultiplier);
-		dfPoints = 0;
-	}
-
-	@Override
-	public void ps$resetLevels() {
-		dfLevel = Math.min(dfLevel + 1, PainScale.CFG.getInt("Levels.minimum_level"));
-		ps$resetPoints();
-	}
-
-	@Override
-	public int ps$getRemainingPoints() {
-		return dfPointsToGrow;
-	}
-
-	@Override
-	public void ps$setPointsMultiplier(double points) {
-		dfPointsToGrowMultiplier = points;
-	}
-
-	@Override
-	public void ps$setDifficultyLevels(int levels) {
-		dfLevel = levels;
-	}
-
-	@Override
-	public void ps$setDifficultyPoints(int points) {
-		dfPoints = points;
-	}
-
-	@Override
-	public void ps$setRemainingPoints(int points) {
-		dfPointsToGrow = points;
-	}
-
-	@Override
-	public double ps$getPointsMultiplier() {
-		return dfPointsToGrowMultiplier;
-	}
 
 	@Override
 	public void ps$setMaxHealth(int value) {
@@ -244,7 +181,9 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 	}
 
 	@Override
-	public void ps$setDifficultyLevel(int level) {
-		dfLevel = level;
+	public Level ps$getDifficultyLevel() {
+
+		return playerManager.get("player.melee").getLevel();
 	}
+
 }

@@ -2,6 +2,7 @@ package deus.painscale.gui;
 
 import deus.painscale.PainScale;
 import deus.painscale.api.IPainScalePlayer;
+import deus.painscale.newsystem.Level;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.hud.HudIngame;
@@ -32,20 +33,17 @@ public class DifficultyMeter extends HudComponentMovable {
 		return PainScale.OPTIONS.get_show_level().value && mc.thePlayer != null;
 	}
 
+	private void renderBar(Minecraft mc, Gui gui, int x, int y, Level level, float partialTick) {
 
-	private void renderBar(Minecraft mc, Gui gui, int x, int y, float amount, float partialTick) {
-		amount = Math.max(0, Math.min(amount, 1));
 
-		String text = (int)(amount * 100) + "l";
-
+		String text = level.getLevel() + " : " + level.getPoints();
 		int textWidth = mc.font.getStringWidth(text);
 		int textHeight = mc.font.fontHeight;
-
 		int textX = x + (width - textWidth) / 2;
 		int textY = y + (height - textHeight) / 2;
-
 		gui.drawStringNoShadow(mc.font, text, textX, textY, Color.WHITE.getRGB());
 	}
+
 
 
 	@Override
@@ -63,7 +61,7 @@ public class DifficultyMeter extends HudComponentMovable {
 		long elapsed = currentTime - previousTime;
 
 		IPainScalePlayer player = (IPainScalePlayer) mc.thePlayer;
-		int difficulty = player.ps$getDifficultyLevel();
+		int difficulty = player.ps$getDifficultyLevel().getPoints();
 
 		if (difficulty != lastDifficulty) {
 			previousTime = System.currentTimeMillis();
@@ -78,7 +76,7 @@ public class DifficultyMeter extends HudComponentMovable {
 		int x = this.getLayout().getComponentX(mc, this, xSizeScreen);
 		int y = this.getLayout().getComponentY(mc, this, ySizeScreen);
 
-		renderBar(mc, gui, x + 2, y, difficulty / 100f, partialTick);
+		renderBar(mc, gui, x + 2, y, player.ps$getDifficultyLevel(), partialTick);
 	}
 
 
@@ -86,7 +84,7 @@ public class DifficultyMeter extends HudComponentMovable {
 	public void renderPreview(Minecraft mc, Gui gui, Layout layout, int xSizeScreen, int ySizeScreen) {
 		int x = layout.getComponentX(mc, this, xSizeScreen);
 		int y = layout.getComponentY(mc, this, ySizeScreen);
-		renderBar(mc, gui, x, y, 1.0f, 0.0f);
+		renderBar(mc, gui, x, y, new Level(100,0,100,0), 0.0f);
 	}
 
 	private void setColor(Color color) {

@@ -17,23 +17,19 @@ public class MinecraftMixin {
 
 	@Shadow public PlayerLocal thePlayer;
 
-	@Inject(method = "respawn", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/player/PlayerLocal;setGamemode(Lnet/minecraft/core/player/gamemode/Gamemode;)V"), remap = false)
-	public void keepPsDfInfo(boolean multiplayer, int targetDimension, CallbackInfo ci, @Local Player previousPlayer) {
-		((IPainScalePlayer)thePlayer).ps$setPointsMultiplier(((IPainScalePlayer)previousPlayer).ps$getPointsMultiplier());
-		((IPainScalePlayer)thePlayer).ps$setRemainingPoints(((IPainScalePlayer)previousPlayer).ps$getRemainingPoints());
-		((IPainScalePlayer)thePlayer).ps$setDifficultyPoints(((IPainScalePlayer)previousPlayer).ps$getDifficultyPoints());
-		((IPainScalePlayer)thePlayer).ps$setDifficultyLevels(((IPainScalePlayer)previousPlayer).ps$getDifficultyLevel());
+	// @Inject(method = "respawn", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/player/PlayerLocal;setGamemode(Lnet/minecraft/core/player/gamemode/Gamemode;)V"), remap = false)
+	/*public void keepPsDfInfo(boolean multiplayer, int targetDimension, CallbackInfo ci, @Local Player previousPlayer) {
 		((IPainScalePlayer)thePlayer).ps$setMaxHealth(previousPlayer.getMaxHealth());
 
 		double multiplier = PainScale.CFG.getDouble("Points.level_cost_points_multiplier");
 		int base = PainScale.CFG.getInt("Points.points_lost_on_death_per_level");
 
-		int pointsToLose = (int) (base * (((IPainScalePlayer)thePlayer).ps$getDifficultyLevel() * multiplier));
+		// int pointsToLose = (int) (base * (((IPainScalePlayer)thePlayer).ps$getDifficultyLevel() * multiplier));
 
-		((IPainScalePlayer)thePlayer).ps$subPoints(pointsToLose);
+		// ((IPainScalePlayer)thePlayer).ps$subPoints(pointsToLose);
 
-		thePlayer.sendMessage("You lost " + pointsToLose + " points...");
-	}
+		// thePlayer.sendMessage("You lost " + pointsToLose + " points...");*/
+	//int overflow = Math.max(0, points - maxPoints);}
 
 
 }
