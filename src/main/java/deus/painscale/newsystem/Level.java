@@ -52,19 +52,19 @@ public class Level {
 
 	public void addLevel(int amount) {
 		int last = level;
-		for (int i = 0; i < amount; i++) {
-			addPoints(getRemainingPoints());
-		}
-		if (level!=last) onChangeLevel.emit(new Tuple<>(last, points));
+		level = Math.min(maxLevel, level + amount);
+		points = Math.min(points, maxPoints); // opcional: ajustar points si excede
+		if (level != last) onChangeLevel.emit(new Tuple<>(last, points));
 	}
+
 
 	public void subLevel(int amount) {
 		int last = level;
-		for (int i = 0; i < amount; i++) {
-			subPoints(getPoints());
-		}
-		if (level!=last) onChangeLevel.emit(new Tuple<>(last, points));
+		level = Math.max(1, level - amount);
+		points = Math.min(points, maxPoints); 
+		if (level != last) onChangeLevel.emit(new Tuple<>(last, points));
 	}
+
 
 	public void resetLevel() {
 		this.level = 1;
