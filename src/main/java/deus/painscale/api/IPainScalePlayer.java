@@ -1,13 +1,12 @@
 package deus.painscale.api;
 
 import deus.painscale.newsystem.Level;
-import deus.painscale.newsystem.PlayerManager;
+import deus.painscale.newsystem.PlayerDifficulty;
 
 public interface IPainScalePlayer {
 
-	Level ps$getDifficultyLevel();
+	PlayerDifficulty ps$getPlayerDifficulty();
 
-	PlayerManager ps$getManager();
 
 	void ps$setMaxHealth(int value);
 	boolean ps$wasKilledByPlayer();

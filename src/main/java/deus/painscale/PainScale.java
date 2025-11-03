@@ -1,6 +1,7 @@
 package deus.painscale;
 
 import deus.painscale.api.IPainScaleSettings;
+import deus.painscale.command.PainScaleCommand;
 import deus.painscale.entity.mob_skeleton_armored.MobSkeletonArmored;
 import deus.painscale.entity.mob_zombie_armored.MobPainScaleZombieArmored;
 import deus.painscale.gui.HudManager;
@@ -8,7 +9,6 @@ import deus.painscale.item.PainScaleItems;
 import deus.painscale.mechanics.ArmorSets;
 import deus.painscale.newsystem.DifficultySystem;
 import deus.painscale.newsystem.Factor;
-import deus.painscale.newsystem.HierarchicalFactorManager;
 import deus.painscale.newsystem.Level;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
@@ -185,7 +185,7 @@ public class PainScale implements ModInitializer, GameStartEntrypoint {
 		if (isCatalystPresent()) LOGGER.warn("Catalyst effects is present.");
 
 		PainScaleItems.init();
-		// CommandManager.registerCommand(new PainScaleCommand());
+		CommandManager.registerCommand(new PainScaleCommand());
 
 		EntityHelper.createEntity(MobSkeletonArmored.class, NamespaceID.getPermanent(MOD_ID, "skeleton_armored"), "skeleton_armored");
 		EntityHelper.createEntity(MobPainScaleZombieArmored.class, NamespaceID.getPermanent(MOD_ID, "ps_zombie_armored"), "ps_zombie_armored");
@@ -194,28 +194,9 @@ public class PainScale implements ModInitializer, GameStartEntrypoint {
 		LOGGER.info("PainScale initialized.");
 
 		DifficultySystem.initialize();
-/*
 
 
-// Nivel 1: Jugador
 
-
-// Factor compuesto local que depende de factores del jugador y del mundo
-		Factor globalDifficultyPlayer = new Factor("player.globalDifficulty", new Level(100, 5));
-		globalDifficultyPlayer.addDependency(melee);
-		globalDifficultyPlayer.addDependency(distance);
-		globalDifficultyPlayer.addDependency(playerManager.get("world.difficulty"));
-		playerManager.register(globalDifficultyPlayer);
-
-// Simulación
-		melee.addPoints(50);
-		distance.addPoints(30);
-		worldDifficulty.addPoints(20); // afecta automáticamente al compuesto
-		System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-		System.out.println(worldDifficulty.toString());
-		System.out.println(globalDifficultyPlayer.toString());
-		System.out.println(playerManager.toString());
-*/
 	}
 
 

@@ -2,9 +2,10 @@ package deus.painscale.mixin.player;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.mojang.nbt.tags.CompoundTag;
+import deus.painscale.PainScale;
 import deus.painscale.api.IPainScalePlayer;
 import deus.painscale.newsystem.Level;
-import deus.painscale.newsystem.PlayerManager;
+import deus.painscale.newsystem.PlayerDifficulty;
 import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.Mob;
 import net.minecraft.core.entity.player.Player;
@@ -29,7 +30,7 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 	@Unique int dayCountLastTick = -1; // Initialize to -1 to ensure first day is detected
 	@Unique private boolean killedBy = false;
 
-	@Unique private PlayerManager playerManager;
+	@Unique private final PlayerDifficulty playerDifficulty = new PlayerDifficulty();
 
 	@Shadow(remap = false) public abstract void readAdditionalSaveData(@NotNull CompoundTag tag);
 	@Shadow public abstract void addAdditionalSaveData(@NotNull CompoundTag tag);
@@ -39,22 +40,17 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 		super(world);
 	}
 
-
-	@Inject(method = "<init>", at = @At("TAIL"), remap = false)
+/*	@Inject(method = "<init>", at = @At("TAIL"), remap = false)
 	public void init(World world, CallbackInfo ci) {
-		playerManager = new PlayerManager();
-	}
+	}*/
 
+	public PlayerDifficulty ps$getPlayerDifficulty() {
+		return playerDifficulty;
+	}
 
 	@Override
 	public boolean ps$wasKilledByPlayer() {
 		return killedBy;
-	}
-
-
-	@Override
-	public PlayerManager ps$getManager() {
-		return playerManager;
 	}
 
 	@Inject(method = "tick", at = @At("TAIL"), remap = false)
@@ -67,7 +63,7 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 			} else if (currentDayCount != dayCountLastTick) {
 				dayCountLastTick = currentDayCount;
 				survivedDayCount++;
-				playerManager.survival.addPoints(20);
+				playerDifficulty.survival.addPoints(20);
 				if (world.getGameRuleValue(DAY_SURVIVED_MESSAGE)) {
 					sendMessage("You have survived " + survivedDayCount + " days!");
 				}
@@ -77,8 +73,8 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 
 	@Inject(method = "attackTargetEntityWithCurrentItem", at = @At("TAIL"), remap = false)
 	public void addPointsOnAttackTargetEntityWithCurrentItem(Entity entity, CallbackInfo ci) {
-		playerManager.melee.addPoints(50);
-		System.out.println(playerManager.melee.getLevel());
+		playerDifficulty.melee.addPoints(50);
+		// System.out.println(playerManager.melee.getLevel());
 	}
 
 	@Inject(method = "onDeath", at = @At("TAIL"), remap = false)
@@ -89,31 +85,23 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 	}
 
 
-	@Override
-	public Level ps$getDifficultyLevel() {
-
-		return playerManager.global.getLevel();
-	}
-
 	@Inject(method = "addAdditionalSaveData", at = @At("TAIL"), remap = false)
 	public void modifiedAddAdditionalSaveData(CompoundTag tag, CallbackInfo ci) {
 		tag.putInt("PsDfMaxHealth", Math.max(maxHealth, 20));
 		tag.putInt("PsDfSurvivedDayCount", survivedDayCount);
 
-		/*
+
 		CompoundTag meleeTag = new CompoundTag();
-		meleeTag.putCompound("melee", playerManager.melee.getLevel().toTag());
+		meleeTag.putCompound("melee", playerDifficulty.melee.getLevel().toTag());
 		tag.put("FactorMelee", meleeTag);
 
 		CompoundTag distanceTag = new CompoundTag();
-		distanceTag.putCompound("distance", playerManager.distance.getLevel().toTag());
+		distanceTag.putCompound("distance", playerDifficulty.distance.getLevel().toTag());
 		tag.put("FactorDistance", distanceTag);
 
 		CompoundTag survivalTag = new CompoundTag();
-		survivalTag.putCompound("survival", playerManager.survival.getLevel().toTag());
+		survivalTag.putCompound("survival", playerDifficulty.survival.getLevel().toTag());
 		tag.put("FactorSurvival", survivalTag);
-		*/
-
 	}
 
 
@@ -124,17 +112,17 @@ public abstract class PlayerMixin extends Mob implements IPainScalePlayer {
 
 		if (tag.containsKey("FactorMelee")) {
 			CompoundTag meleeTag = tag.getCompound("FactorMelee");
-			playerManager.melee.getLevel().loadFromCompound(meleeTag.getCompound("melee"));
+			playerDifficulty.melee.getLevel().loadFromCompound(meleeTag.getCompound("melee"));
 		}
 
 		if (tag.containsKey("FactorDistance")) {
 			CompoundTag distanceTag = tag.getCompound("FactorDistance");
-			playerManager.distance.getLevel().loadFromCompound(distanceTag.getCompound("distance"));
+			playerDifficulty.distance.getLevel().loadFromCompound(distanceTag.getCompound("distance"));
 		}
 
 		if (tag.containsKey("FactorSurvival")) {
 			CompoundTag survivalTag = tag.getCompound("FactorSurvival");
-			playerManager.survival.getLevel().loadFromCompound(survivalTag.getCompound("survival"));
+			playerDifficulty.survival.getLevel().loadFromCompound(survivalTag.getCompound("survival"));
 		}
 	}
 

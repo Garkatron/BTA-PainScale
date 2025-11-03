@@ -66,7 +66,7 @@ public class SpawnerMobsMixin implements IPainScaleSpawnerMobs {
 		if (players.size() == 1) {
 			Player solo = players.get(0);
 			if (solo instanceof IPainScalePlayer) {
-				return ((IPainScalePlayer) solo).ps$getDifficultyLevel().getLevel();
+				return ((IPainScalePlayer) solo).ps$getPlayerDifficulty().melee.getLevel().getLevel();
 			}
 			return 0.0;
 		}
@@ -95,7 +95,7 @@ public class SpawnerMobsMixin implements IPainScaleSpawnerMobs {
 
 		for (Player p : countedPlayers) {
 			if (p instanceof IPainScalePlayer) {
-				totalLevel += ((IPainScalePlayer) p).ps$getDifficultyLevel().getLevel();
+				totalLevel += ((IPainScalePlayer) p).ps$getPlayerDifficulty().melee.getLevel().getLevel();
 				count++;
 			}
 		}

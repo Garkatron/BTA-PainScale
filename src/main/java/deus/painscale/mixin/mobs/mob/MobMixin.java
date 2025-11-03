@@ -30,8 +30,7 @@ public class MobMixin implements IPainScaleMob {
 	public void addPointsOnDeath(Entity entityKilledBy, CallbackInfo ci) {
 		if (entityKilledBy instanceof Player player) {
 			IPainScalePlayer p = (IPainScalePlayer) player;
-			int points = (int) Math.max(PainScale.CFG.getInt("Points.base_points_per_monster"), dfPointsMultiplier * p.ps$getDifficultyLevel().getLevel());
-			p.ps$getDifficultyLevel().addPoints(points);
+			p.ps$getPlayerDifficulty().melee.addPoints(20);
 		}
 	}
 

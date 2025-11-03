@@ -2,10 +2,9 @@ package deus.painscale.newsystem;
 
 public class DifficultySystem {
 
-	public static final HierarchicalFactorManager worldManager = new HierarchicalFactorManager(null);
-	public static final Factor worldDifficulty = new Factor("world.difficulty", new Level(10000, 100));
+	public static Factor WORLD_DIFFICULTY;
 
 	public static void initialize() {
-		worldManager.register(worldDifficulty);
+		WORLD_DIFFICULTY = new Factor("worldDifficulty", new Level(100,1,100,0), 1.0);
 	}
 }

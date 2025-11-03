@@ -61,7 +61,7 @@ public class DifficultyMeter extends HudComponentMovable {
 		long elapsed = currentTime - previousTime;
 
 		IPainScalePlayer player = (IPainScalePlayer) mc.thePlayer;
-		int difficulty = player.ps$getDifficultyLevel().getPoints();
+		int difficulty = player.ps$getPlayerDifficulty().melee.getLevel().getPoints();
 
 		if (difficulty != lastDifficulty) {
 			previousTime = System.currentTimeMillis();
@@ -76,7 +76,7 @@ public class DifficultyMeter extends HudComponentMovable {
 		int x = this.getLayout().getComponentX(mc, this, xSizeScreen);
 		int y = this.getLayout().getComponentY(mc, this, ySizeScreen);
 
-		renderBar(mc, gui, x + 2, y, player.ps$getDifficultyLevel(), partialTick);
+		renderBar(mc, gui, x + 2, y, player.ps$getPlayerDifficulty().melee.getLevel(), partialTick);
 	}
 
 

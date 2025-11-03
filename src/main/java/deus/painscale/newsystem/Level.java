@@ -1,12 +1,16 @@
 package deus.painscale.newsystem;
 
 import com.mojang.nbt.tags.CompoundTag;
+import deus.painscale.util.Signal;
+import deus.painscale.util.Tuple;
 
 public class Level {
 	private int points;
 	private int level;
 	private int maxPoints;
 	private int maxLevel;
+	public static Signal<Tuple<Integer, Integer>> onChangeLevel = new Signal<>();
+	public static Signal<Tuple<Integer, Integer>> onChangePoints = new Signal<>();
 
 	// public final Signal<Integer> onLevelUp = new Signal<>();
 	// public final Signal<Integer> onLevelDown = new Signal<>();
@@ -26,7 +30,14 @@ public class Level {
 		this.level = Math.max(1, level);
 	}
 
+
+	public void reset() {
+		this.resetPoints();
+		this.resetLevel();
+	}
+
 	public void addPoints(int amount) {
+		int last = points;
 		points += amount;
 		while (atMaxPoints()) {
 			points -= maxPoints;
@@ -36,9 +47,34 @@ public class Level {
 				break;
 			}
 		}
+		if (points!=last) onChangePoints.emit(new Tuple<>(last, points));
+	}
+
+	public void addLevel(int amount) {
+		int last = level;
+		for (int i = 0; i < amount; i++) {
+			addPoints(getRemainingPoints());
+		}
+		if (level!=last) onChangeLevel.emit(new Tuple<>(last, points));
+	}
+
+	public void subLevel(int amount) {
+		int last = level;
+		for (int i = 0; i < amount; i++) {
+			subPoints(getPoints());
+		}
+		if (level!=last) onChangeLevel.emit(new Tuple<>(last, points));
+	}
+
+	public void resetLevel() {
+		this.level = 1;
+	}
+	public void resetPoints() {
+		this.points = 0;
 	}
 
 	public void subPoints(int amount) {
+		int last = points;
 		points -= amount;
 		if (points < 0) {
 			if (level > 0) {
@@ -48,6 +84,8 @@ public class Level {
 				points = 0;
 			}
 		}
+		if (points!=last) onChangePoints.emit(new Tuple<>(last, points));
+
 	}
 
 	public double asPercentage() {
@@ -90,11 +128,16 @@ public class Level {
 	}
 
 	protected void setLevel(int level) {
+		int last = this.level;
 		this.level = level;
+		if (level!=last) onChangeLevel.emit(new Tuple<>(last, points));
+
 	}
 	public void setPoints(int points) {
+		int last = this.points;
 		this.points = points;
-	}
+		if (points!=last) onChangePoints.emit(new Tuple<>(last, points));	}
+
 	protected void setMaxLevel(int maxLevel) {
 		this.maxLevel = maxLevel;
 	}
